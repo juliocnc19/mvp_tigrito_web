@@ -68,6 +68,8 @@ export async function updateServicePosting(
 export async function getServicePostings(
   query: z.infer<typeof GetServicePostingsQuerySchema>
 ): Promise<{ postings: any[]; total: number }> {
+  console.log('🗄️ [getServicePostings] Starting database query with params:', query);
+  
   const {
     page,
     limit,
@@ -83,17 +85,28 @@ export async function getServicePostings(
     sortDirection = 'desc',
   } = query;
 
+  console.log('🔍 [getServicePostings] Building where clause...');
   const where: Prisma.ServicePostingWhereInput = {};
 
   if (status) {
     where.status = status as any;
+    console.log('🔍 [getServicePostings] Added status filter:', status);
   }
-  if (category) where.categoryId = category;
+  if (category) {
+    where.categoryId = category;
+    console.log('🔍 [getServicePostings] Added category filter:', category);
+  }
   
   if (minBudget !== undefined || maxBudget !== undefined) {
     where.budget = {};
-    if (minBudget !== undefined) where.budget.gte = minBudget;
-    if (maxBudget !== undefined) where.budget.lte = maxBudget;
+    if (minBudget !== undefined) {
+      where.budget.gte = minBudget;
+      console.log('🔍 [getServicePostings] Added minBudget filter:', minBudget);
+    }
+    if (maxBudget !== undefined) {
+      where.budget.lte = maxBudget;
+      console.log('🔍 [getServicePostings] Added maxBudget filter:', maxBudget);
+    }
   }
 
   if (search) {
@@ -101,6 +114,7 @@ export async function getServicePostings(
       { title: { contains: search, mode: 'insensitive' } },
       { description: { contains: search, mode: 'insensitive' } },
     ];
+    console.log('🔍 [getServicePostings] Added search filter:', search);
   }
 
   if (locationLat && locationLng && radius) {
@@ -108,27 +122,48 @@ export async function getServicePostings(
       { lat: { gte: locationLat - (radius / 111), lte: locationLat + (radius / 111) } },
       { lng: { gte: locationLng - (radius / 111), lte: locationLng + (radius / 111) } },
     ];
+    console.log('🔍 [getServicePostings] Added location filter:', { locationLat, locationLng, radius });
   }
 
   let orderBy: any = { createdAt: 'desc' };
   if (sortBy === 'budget') orderBy = { budget: sortDirection };
   else if (sortBy === 'deadline') orderBy = { requiredTo: sortDirection };
 
-  const [postings, total] = await Promise.all([
-    prisma.servicePosting.findMany({
-      where,
-      skip: (page - 1) * limit,
-      take: limit,
-      orderBy,
-      include: {
-        client: true,
-        offers: true,
-      },
-    }),
-    prisma.servicePosting.count({ where }),
-  ]);
+  console.log('🔍 [getServicePostings] Final where clause:', JSON.stringify(where, null, 2));
+  console.log('🔍 [getServicePostings] Order by:', orderBy);
+  console.log('🔍 [getServicePostings] Pagination:', { skip: (page - 1) * limit, take: limit });
 
-  return { postings, total };
+  try {
+    console.log('🗄️ [getServicePostings] Executing database queries...');
+    const [postings, total] = await Promise.all([
+      prisma.servicePosting.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy,
+        include: {
+          client: true,
+          offers: true,
+          category: true, // Include the profession/category relation
+        },
+      }),
+      prisma.servicePosting.count({ where }),
+    ]);
+
+    console.log('✅ [getServicePostings] Database queries successful:', {
+      postingsCount: postings.length,
+      total,
+    });
+
+    return { postings, total };
+  } catch (dbError) {
+    console.error('❌ [getServicePostings] Database error:', {
+      error: dbError instanceof Error ? dbError.message : dbError,
+      stack: dbError instanceof Error ? dbError.stack : undefined,
+      name: dbError instanceof Error ? dbError.name : undefined,
+    });
+    throw dbError;
+  }
 }
 
 // Delete service posting (soft delete)

@@ -48,7 +48,6 @@ export async function GET(request: NextRequest) {
       locationLng,
       radius,
     });
-
     // Prepare response data
     const usersData = users.map(user => ({
       id: user.id,
@@ -106,3 +105,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

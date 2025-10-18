@@ -12,11 +12,16 @@ import { getProfessionalServiceById } from '@/lib/db/queries/professional-servic
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
-
+    const id = request.nextUrl.searchParams.get('id');
+    console.log('id', id);
+    if (!id) {
+      return NextResponse.json(
+        createErrorResponse(COMMON_ERROR_CODES.VALIDATION_ERROR, 'id query parameter is required'),
+        { status: 400 }
+      );
+    }
     const service = await getProfessionalServiceById(id);
     if (!service) {
       return NextResponse.json(
@@ -25,22 +30,9 @@ export async function GET(
       );
     }
 
-    const responseData = { service };
-    const responseValidation = ProfessionalServiceResponseSchema.safeParse(responseData);
-
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues,
-        ),
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Professional service retrieved successfully')
+      createSuccessResponse(service, 'Professional service retrieved successfully')
     );
 
   } catch (error) {

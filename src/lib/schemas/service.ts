@@ -6,16 +6,16 @@ export const ServicePostingSchema = z.object({
   clientId: z.string(),
   title: z.string(),
   description: z.string(),
-  category: z.string(),
-  budget: z.number(),
-  deadline: z.string().datetime().nullable(),
-  status: z.enum(['OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
-  location: z.string().nullable(),
-  locationLat: z.number().nullable(),
-  locationLng: z.number().nullable(),
+  category: z.string().optional(),
+  budget: z.number().optional(),
+  deadline: z.string().datetime().nullable().optional(),
+  status: z.enum(['OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
+  location: z.string().nullable().optional(),
+  locationLat: z.number().nullable().optional(),
+  locationLng: z.number().nullable().optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
-  deletedAt: z.string().datetime().nullable(),
+  deletedAt: z.string().datetime().nullable().optional(),
 });
 
 // Create Service Posting Request
@@ -90,8 +90,8 @@ export const ServiceTransactionSchema = z.object({
 
 // Get Service Postings Query Schema
 export const GetServicePostingsQuerySchema = z.object({
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(100).default(10),
+  page: z.coerce.number().min(1).default(1).optional(),
+  limit: z.coerce.number().min(1).max(100).default(10).optional(),
   status: z.enum(['OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
   category: z.string().optional(),
   minBudget: z.coerce.number().min(0).optional(),
@@ -99,9 +99,9 @@ export const GetServicePostingsQuerySchema = z.object({
   search: z.string().optional(),
   locationLat: z.coerce.number().optional(),
   locationLng: z.coerce.number().optional(),
-  radius: z.coerce.number().min(0).default(10),
+  radius: z.coerce.number().min(0).default(10).optional(),
   sortBy: z.enum(['budget', 'recent', 'deadline']).optional(),
-  sortDirection: z.enum(['asc', 'desc']).default('desc'),
+  sortDirection: z.enum(['asc', 'desc']).default('desc').optional(),
 });
 
 // Get Service Offers Query Schema

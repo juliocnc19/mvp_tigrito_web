@@ -43,7 +43,6 @@ export async function GET(request: NextRequest) {
       dateFrom,
       dateTo,
     });
-
     // Prepare response data
     const withdrawalsData = withdrawals.map(withdrawal => ({
       id: withdrawal.id,
@@ -97,3 +96,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

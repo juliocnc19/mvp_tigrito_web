@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
   try {
     // Get userId and role from query parameters
     const userId = request.nextUrl.searchParams.get('userId');
-    const role = request.nextUrl.searchParams.get('role');
     
     if (!userId) {
       return NextResponse.json(
@@ -45,48 +44,22 @@ export async function GET(request: NextRequest) {
 
     const { page, limit, status, dateFrom, dateTo } = validation.data;
     
-    let clientId: string | undefined = validation.data.clientId;
-    let professionalId: string | undefined = validation.data.professionalId;
-
-    // Non-admin users can only see their own transactions
-    if (role !== 'ADMIN') {
-      if (role === 'CLIENT') {
-        clientId = userId;
-      } else if (role === 'PROFESSIONAL') {
-        professionalId = userId;
-      }
-    }
-
     const { transactions, total } = await getServiceTransactions({
       page,
       limit,
-      clientId,
-      professionalId,
+      userId,
       status,
       dateFrom,
       dateTo,
     });
-
     const responseData = { transactions, total };
-    const responseValidation = TransactionsListResponseSchema.safeParse(responseData);
-
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues,
-        ),
-        { status: 500 }
-      );
-    }
-
+    
     return NextResponse.json(
       paginationResponse(
         transactions,
         total,
-        page,
-        limit,
+        page ?? 1,
+        limit ?? 10,
         'Transactions retrieved successfully'
       )
     );
@@ -102,3 +75,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

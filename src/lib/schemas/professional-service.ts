@@ -2,17 +2,17 @@ import { z } from 'zod';
 
 // Professional Service Schema
 export const ProfessionalServiceSchema = z.object({
-  id: z.string(),
-  professionalId: z.string(),
-  title: z.string(),
-  slug: z.string(),
-  description: z.string(),
-  price: z.number(),
-  categoryId: z.string(),
+  id: z.string().optional(),
+  professionalId: z.string().optional(),
+  title: z.string().optional(),
+  slug: z.string().optional(),
+  description: z.string().optional(),
+  price: z.number().optional(),
+  categoryId: z.string().optional(),
   serviceLocations: z.any().optional(),
-  isActive: z.boolean(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  isActive: z.boolean().optional(),
+  createdAt: z.string().datetime().optional(),
+  updatedAt: z.string().datetime().optional(),
   professionalProfileId: z.string().optional(),
 });
 
@@ -54,21 +54,21 @@ export const GetProfessionalServicesQuerySchema = z.object({
 // Professional Service with Relations Schema
 export const ProfessionalServiceWithRelationsSchema = ProfessionalServiceSchema.extend({
   professional: z.object({
-    id: z.string(),
-    name: z.string().nullable(),
-    email: z.string().nullable(),
-    phone: z.string().nullable(),
+    id: z.string().optional(),
+    name: z.string().optional(),
+    email: z.string().optional(),
+    phone: z.string().optional(),
   }).optional(),
   category: z.object({
     id: z.string(),
-    name: z.string(),
-    slug: z.string(),
+    name: z.string().optional(),
+    slug: z.string().optional(),
   }).optional(),
   ProfessionalProfile: z.object({
     id: z.string(),
-    bio: z.string().nullable(),
-    rating: z.number().nullable(),
-    ratingCount: z.number(),
+    bio: z.string().optional(),
+    rating: z.number().optional(),
+    ratingCount: z.number().optional(),
   }).optional(),
   media: z.array(z.any()).optional(),
 });
@@ -76,7 +76,7 @@ export const ProfessionalServiceWithRelationsSchema = ProfessionalServiceSchema.
 // Professional Services List Response Schema
 export const ProfessionalServicesListResponseSchema = z.object({
   services: z.array(ProfessionalServiceWithRelationsSchema),
-  total: z.number(),
+  total: z.number().optional(),
 });
 
 // Professional Service Response Schema

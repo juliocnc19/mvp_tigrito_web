@@ -30,7 +30,8 @@ export async function createProfessionalService(data: {
 
 // Get professional service by ID
 export async function getProfessionalServiceById(id: string): Promise<any> {
-  return prisma.professionalService.findUnique({
+  console.log('id', id);
+  const service = await prisma.professionalService.findUnique({
     where: { id },
     include: {
       professional: { select: { id: true, name: true, email: true, phone: true } },
@@ -39,6 +40,7 @@ export async function getProfessionalServiceById(id: string): Promise<any> {
       media: true,
     },
   });
+  return service;
 }
 
 // Get professional services with filters and pagination

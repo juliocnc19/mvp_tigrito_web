@@ -18,24 +18,23 @@ export async function getServiceTransactions(query: z.infer<typeof GetTransactio
   transactions: ServiceTransaction[];
   total: number;
 }> {
-  const { page, limit, clientId, professionalId, status, dateFrom, dateTo } = query;
+  const { userId, page, limit, status, dateFrom, dateTo } = query;
 
   const where: Prisma.ServiceTransactionWhereInput = {};
 
-  if (clientId) where.clientId = clientId;
-  if (professionalId) where.professionalId = professionalId;
+  if (userId) where.clientId = userId;
   if (status) where.currentStatus = status;
   if (dateFrom || dateTo) {
     where.createdAt = {};
     if (dateFrom) where.createdAt.gte = new Date(dateFrom);
     if (dateTo) where.createdAt.lte = new Date(dateTo);
   }
-
+  console.log('where', where);
   const [transactions, total] = await Promise.all([
     prisma.serviceTransaction.findMany({
       where,
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (page - 1) * (limit ?? 10),
+      take: limit ?? 10,
       orderBy: { createdAt: 'desc' },
       include: {
         client: { select: { id: true, name: true, email: true }},
@@ -45,6 +44,7 @@ export async function getServiceTransactions(query: z.infer<typeof GetTransactio
     }),
     prisma.serviceTransaction.count({ where }),
   ]);
-
+  console.log('transactions', transactions);
+  console.log('total', total);
   return { transactions, total };
 }

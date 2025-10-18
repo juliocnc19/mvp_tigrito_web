@@ -37,13 +37,12 @@ export const UpdateTransactionStatusRequestSchema = z.object({
 
 // Get Transactions Query Schema
 export const GetTransactionsQuerySchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(10),
-  clientId: z.string().optional(),
-  professionalId: z.string().optional(),
   status: ServiceStatusSchema.optional(),
   dateFrom: z.string().datetime().optional(),
-  dateTo: z.string().datetime().optional(),
+  dateTo: z.string().datetime().optional().optional(),
 });
 
 // Transaction Response

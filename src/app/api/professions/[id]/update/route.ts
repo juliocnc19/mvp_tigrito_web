@@ -10,7 +10,7 @@ import { updateProfession, getProfessionById, getProfessionBySlug } from '@/lib/
  * @description Update an existing profession
  * @param params.id {string} The profession ID
  * @body UpdateProfessionRequestSchema
- * @response 200:ProfessionResponseSchema:Profession updated successfully
+ * @response ProfessionResponseSchema
  * @response 403:Forbidden
  * @response 404:Not found
  * @response 409:Conflict - Slug already exists

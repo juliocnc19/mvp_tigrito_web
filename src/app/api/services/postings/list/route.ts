@@ -8,7 +8,7 @@ import { getServicePostings } from '@/lib/db/queries/service';
  * Get service postings
  * @description Retrieve a paginated list of service postings with optional filters
  * @query GetServicePostingsQuerySchema
- * @response 200:ServicePostingsListResponseSchema:Service postings retrieved successfully
+ * @response ServicePostingsListResponseSchema
  * @responseSet public
  * @openapi
  */

@@ -3,11 +3,12 @@ import { ServiceTransaction, Prisma } from '@prisma/client';
 import { GetTransactionsQuerySchema } from '@/lib/schemas/transaction';
 import { z } from 'zod';
 
-export async function getServiceTransactionById(id: string): Promise<(ServiceTransaction & { reviews: any[] }) | null> {
+export async function getServiceTransactionById(id: string): Promise<(ServiceTransaction & { reviews: any[]; payment: any }) | null> {
   return prisma.serviceTransaction.findUnique({
     where: { id },
     include: {
       reviews: true,
+      payment: true,
     },
   });
 }

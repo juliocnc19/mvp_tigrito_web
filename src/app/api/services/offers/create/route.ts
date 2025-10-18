@@ -9,7 +9,7 @@ import { createServiceOffer, getServiceOfferById } from '@/lib/db/queries/servic
  * Create service offer
  * @description Create a new service offer for a posting
  * @body CreateServiceOfferRequestSchema
- * @response 201:ServiceOfferResponseSchema:Service offer created successfully
+ * @response ServiceOfferResponseSchema
  * @responseSet auth
  * @security BearerAuth
  * @openapi

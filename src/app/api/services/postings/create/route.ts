@@ -9,7 +9,7 @@ import { createServicePosting, getServicePostingById } from '@/lib/db/queries/se
  * Create service posting
  * @description Create a new service posting
  * @body CreateServicePostingRequestSchema
- * @response 201:ServicePostingResponseSchema:Service posting created successfully
+ * @response ServicePostingResponseSchema
  * @responseSet auth
  * @security BearerAuth
  * @openapi

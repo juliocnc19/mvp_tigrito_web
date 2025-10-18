@@ -16,19 +16,44 @@ export const MediaSchema = z.object({
   createdAt: z.string().datetime(),
 });
 
-// Upload Media Request
-export const UploadMediaRequestSchema = z.object({
-  files: z.array(z.instanceof(File)),
-  type: MediaTypeSchema.optional(),
-});
-
 // Get Media Query Schema
 export const GetMediaQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(10),
-  uploadedById: z.string().optional(),
   type: MediaTypeSchema.optional(),
+  uploadedById: z.string().optional(),
   postingId: z.string().optional(),
   proServiceId: z.string().optional(),
   transactionId: z.string().optional(),
+  reportId: z.string().optional(),
+});
+
+// Media with Relations Schema
+export const MediaWithRelationsSchema = MediaSchema.extend({
+  uploadedBy: z.object({
+    id: z.string(),
+    name: z.string().nullable(),
+    email: z.string().nullable(),
+  }).nullable().optional(),
+  posting: z.object({
+    id: z.string(),
+    title: z.string(),
+  }).nullable().optional(),
+  proService: z.object({
+    id: z.string(),
+    title: z.string(),
+  }).nullable().optional(),
+  transaction: z.object({
+    id: z.string(),
+  }).nullable().optional(),
+  report: z.object({
+    id: z.string(),
+    reason: z.string(),
+  }).nullable().optional(),
+});
+
+// Media List Response Schema
+export const MediaListResponseSchema = z.object({
+  media: z.array(MediaWithRelationsSchema),
+  total: z.number(),
 });

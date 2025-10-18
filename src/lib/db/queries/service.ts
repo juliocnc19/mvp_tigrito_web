@@ -139,6 +139,14 @@ export async function deleteServicePosting(id: string): Promise<ServicePosting> 
   });
 }
 
+// Update service posting status
+export async function updateServicePostingStatus(id: string, status: 'OPEN' | 'CLOSED' | 'EXPIRED'): Promise<ServicePosting> {
+  return prisma.servicePosting.update({
+    where: { id },
+    data: { status },
+  });
+}
+
 // ==================== SERVICE OFFER QUERIES ====================
 
 // Create service offer
@@ -242,10 +250,13 @@ export async function createServiceTransaction(data: {
   return prisma.serviceTransaction.create({
     data: {
       postingId: data.postingId,
+      offerId: data.offerId,
       clientId: data.clientId,
       professionalId: data.professionalId,
       priceAgreed: data.agreedPrice,
+      agreedPrice: data.agreedPrice,
       currentStatus: 'PENDING_SOLICITUD',
+      status: 'PENDING_SOLICITUD',
     },
   });
 }

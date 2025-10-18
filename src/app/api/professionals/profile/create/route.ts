@@ -9,7 +9,7 @@ import { createProfessionalProfile, getProfessionalByUserId } from '@/lib/db/que
  * Create professional profile
  * @description Create a professional profile for the authenticated user
  * @body CreateProfessionalProfileRequestSchema
- * @response 201:ProfessionalProfileResponseSchema:Professional profile created successfully
+ * @response ProfessionalProfileResponseSchema
  * @add 403:Only clients and professionals can create a professional profile
  * @add 409:Professional profile already exists
  * @responseSet auth

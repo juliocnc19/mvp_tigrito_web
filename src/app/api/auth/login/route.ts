@@ -12,7 +12,7 @@ import { getUserByEmailOrPhone } from '@/lib/db/queries/user';
  * User login
  * @description Authenticate user with email/phone and password
  * @body LoginRequestSchema
- * @response 200:AuthResponseSchema:Login successful
+ * @response AuthResponseSchema
  * @add 401:Unauthorized
  * @add 403:Account suspended
  * @responseSet public

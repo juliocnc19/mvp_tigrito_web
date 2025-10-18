@@ -56,3 +56,6 @@ export const MediaTypeSchema = z.enum(['IMAGE', 'VIDEO', 'DOCUMENT']);
 export const DiscountTypeSchema = z.enum(['PERCENTAGE', 'FIXED_AMOUNT']);
 export const AdSegmentSchema = z.enum(['CLIENT', 'PROFESSIONAL', 'ALL']);
 export const WithdrawalStatusSchema = z.enum(['PENDING', 'COMPLETED', 'FAILED']);
+export const ConversationTypeSchema = z.enum(['CLIENT_PROFESSIONAL', 'SUPPORT']);
+export const MessageRoleSchema = z.enum(['USER', 'ASSISTANT', 'SYSTEM']);
+export const MessageTypeSchema = z.enum(['TEXT', 'IMAGE', 'FILE', 'SYSTEM']);

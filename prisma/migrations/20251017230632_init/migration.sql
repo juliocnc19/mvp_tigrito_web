@@ -14,7 +14,10 @@ CREATE TYPE "OfferStatus" AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED');
 CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED');
 
 -- CreateEnum
-CREATE TYPE "PaymentMethod" AS ENUM ('BINANCE', 'CASHEA', 'BALANCE', 'TRANSFER', 'CARD', 'OTHER');
+CREATE TYPE "WithdrawalStatus" AS ENUM ('PENDING', 'COMPLETED', 'FAILED');
+
+-- CreateEnum
+CREATE TYPE "PaymentMethod" AS ENUM ('CASHEA', 'BALANCE', 'TRANSFER', 'PAY_MOBILE', 'CARD', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "AdSegment" AS ENUM ('CLIENT', 'PROFESSIONAL', 'ALL');
@@ -174,6 +177,39 @@ CREATE TABLE "Payment" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserPaymentMethod" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "method" "PaymentMethod" NOT NULL,
+    "accountNumber" TEXT,
+    "accountAlias" TEXT,
+    "idNumber" TEXT,
+    "phoneNumber" TEXT,
+    "details" JSONB,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "UserPaymentMethod_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Withdrawal" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "paymentMethodId" TEXT NOT NULL,
+    "amount" DECIMAL(14,2) NOT NULL,
+    "status" "WithdrawalStatus" NOT NULL DEFAULT 'PENDING',
+    "requestedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completedAt" TIMESTAMP(3),
+    "adminNotes" TEXT,
+    "rejectionReason" TEXT,
+
+    CONSTRAINT "Withdrawal_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -421,6 +457,21 @@ CREATE INDEX "Payment_userId_idx" ON "Payment"("userId");
 CREATE INDEX "Payment_status_idx" ON "Payment"("status");
 
 -- CreateIndex
+CREATE INDEX "UserPaymentMethod_userId_idx" ON "UserPaymentMethod"("userId");
+
+-- CreateIndex
+CREATE INDEX "UserPaymentMethod_userId_isDefault_idx" ON "UserPaymentMethod"("userId", "isDefault");
+
+-- CreateIndex
+CREATE INDEX "Withdrawal_userId_idx" ON "Withdrawal"("userId");
+
+-- CreateIndex
+CREATE INDEX "Withdrawal_status_idx" ON "Withdrawal"("status");
+
+-- CreateIndex
+CREATE INDEX "Withdrawal_requestedAt_idx" ON "Withdrawal"("requestedAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Review_reviewerId_reviewedId_transactionId_key" ON "Review"("reviewerId", "reviewedId", "transactionId");
 
 -- CreateIndex
@@ -503,6 +554,15 @@ ALTER TABLE "Payment" ADD CONSTRAINT "Payment_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "Payment" ADD CONSTRAINT "Payment_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "ServiceTransaction"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserPaymentMethod" ADD CONSTRAINT "UserPaymentMethod_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Withdrawal" ADD CONSTRAINT "Withdrawal_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Withdrawal" ADD CONSTRAINT "Withdrawal_paymentMethodId_fkey" FOREIGN KEY ("paymentMethodId") REFERENCES "UserPaymentMethod"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "ServiceTransaction"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

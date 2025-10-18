@@ -1,0 +1,126 @@
+task_assignments:
+  # Phase 1: Foundation & Setup
+  - task_group: "Phase 1.1: Project Setup & Dependencies (TASK-001 to TASK-004)"
+    assigned_subagent: "api-engineer"
+    description: "Install dependencies, configure next-openapi-gen, Zod validation, project structure, and Prisma integration"
+
+  - task_group: "Phase 1.2: Base Utilities & Schemas (TASK-005 to TASK-008)"
+    assigned_subagent: "api-engineer"
+    description: "Create common Zod schemas, response utilities, validation utilities, and file upload utilities"
+
+  # Phase 2: Authentication System
+  - task_group: "Phase 2.1: JWT Authentication (TASK-009 to TASK-011)"
+    assigned_subagent: "api-engineer"
+    description: "Create JWT utilities, authentication middleware, and password utilities"
+
+  - task_group: "Phase 2.2: Authentication Endpoints (TASK-012 to TASK-017)"
+    assigned_subagent: "api-engineer"
+    description: "Implement all authentication endpoints (register, login, refresh, logout, email verification, password reset)"
+
+  # Phase 3: Core User Management
+  - task_group: "Phase 3.1: User Schemas & Queries (TASK-018 to TASK-019)"
+    assigned_subagent: "database-engineer"
+    description: "Create user Zod schemas and user database queries"
+
+  - task_group: "Phase 3.2: User Endpoints (TASK-020 to TASK-024)"
+    assigned_subagent: "api-engineer"
+    description: "Implement all user management endpoints (profile, list, get by ID, verification)"
+
+  # Phase 4: Professional Management
+  - task_group: "Phase 4.1: Professional Schemas & Queries (TASK-025 to TASK-026)"
+    assigned_subagent: "database-engineer"
+    description: "Create professional Zod schemas and professional database queries"
+
+  - task_group: "Phase 4.2: Professional Endpoints (TASK-027 to TASK-029)"
+    assigned_subagent: "api-engineer"
+    description: "Implement professional profile endpoints, listing endpoints, and profession management"
+
+  # Phase 5: Service Management
+  - task_group: "Phase 5.1: Service Posting System (TASK-030 to TASK-032)"
+    assigned_subagent: "api-engineer"
+    description: "Create service posting schemas, queries, and implement all service posting endpoints"
+
+  - task_group: "Phase 5.2: Offer System (TASK-033 to TASK-034)"
+    assigned_subagent: "api-engineer"
+    description: "Create offer schemas and queries, implement all offer endpoints"
+
+  - task_group: "Phase 5.3: Professional Services (TASK-035 to TASK-037)"
+    assigned_subagent: "api-engineer"
+    description: "Create professional service schemas, queries, and implement all professional service endpoints"
+
+  - task_group: "Phase 5.4: Service Transactions (TASK-038 to TASK-040)"
+    assigned_subagent: "api-engineer"
+    description: "Create transaction schemas, queries, and implement all transaction endpoints"
+
+  # Phase 6: Payment System
+  - task_group: "Phase 6.1: Payment Infrastructure (TASK-041 to TASK-043)"
+    assigned_subagent: "api-engineer"
+    description: "Create payment schemas, queries, and implement payment processing logic"
+
+  - task_group: "Phase 6.2: Payment Endpoints (TASK-044 to TASK-045)"
+    assigned_subagent: "api-engineer"
+    description: "Implement all payment endpoints and payment method management"
+
+  # Phase 7: Review & Rating System
+  - task_group: "Phase 7.1: Review System (TASK-046 to TASK-048)"
+    assigned_subagent: "api-engineer"
+    description: "Create review schemas, queries, and implement all review endpoints"
+
+  # Phase 8: Media Management
+  - task_group: "Phase 8.1: File Upload System (TASK-049 to TASK-051)"
+    assigned_subagent: "api-engineer"
+    description: "Create media schemas, file upload utilities, and media queries"
+
+  - task_group: "Phase 8.2: Media Endpoints (TASK-052)"
+    assigned_subagent: "api-engineer"
+    description: "Implement all media endpoints (upload, list, get, delete)"
+
+  # Phase 9: Communication System
+  - task_group: "Phase 9.1: Chat System (TASK-053 to TASK-055)"
+    assigned_subagent: "api-engineer"
+    description: "Create conversation schemas, queries, and implement WebSocket support"
+
+  - task_group: "Phase 9.2: Communication Endpoints (TASK-056)"
+    assigned_subagent: "api-engineer"
+    description: "Implement all conversation endpoints"
+
+  # Phase 10: Promotional System
+  - task_group: "Phase 10.1: Promo Code System (TASK-057 to TASK-059)"
+    assigned_subagent: "api-engineer"
+    description: "Create promo code schemas, queries, and implement all promo code endpoints"
+
+  # Phase 11: Reporting System
+  - task_group: "Phase 11.1: Report System (TASK-060 to TASK-062)"
+    assigned_subagent: "api-engineer"
+    description: "Create report schemas, queries, and implement all report endpoints"
+
+  # Phase 12: Admin Dashboard
+  - task_group: "Phase 12.1: Metrics System (TASK-063 to TASK-065)"
+    assigned_subagent: "database-engineer"
+    description: "Create metrics schemas, queries, and implement all metrics endpoints"
+
+  - task_group: "Phase 12.2: Admin Management (TASK-066)"
+    assigned_subagent: "api-engineer"
+    description: "Implement admin endpoints (ad campaigns, withdrawals, notifications, audit logs)"
+
+  # Phase 13: Testing & Quality Assurance
+  - task_group: "Phase 13.1: Unit Testing (TASK-067 to TASK-069)"
+    assigned_subagent: "testing-engineer"
+    description: "Create unit tests for utilities, schemas, and queries"
+
+  - task_group: "Phase 13.2: Integration Testing (TASK-070 to TASK-072)"
+    assigned_subagent: "testing-engineer"
+    description: "Create API endpoint tests, file upload tests, and payment system tests"
+
+  - task_group: "Phase 13.3: End-to-End Testing (TASK-073 to TASK-074)"
+    assigned_subagent: "testing-engineer"
+    description: "Create user journey tests and admin workflow tests"
+
+  # Phase 14: Documentation & Deployment
+  - task_group: "Phase 14.1: API Documentation (TASK-075 to TASK-076)"
+    assigned_subagent: "api-engineer"
+    description: "Generate OpenAPI documentation and create API usage examples"
+
+  - task_group: "Phase 14.2: Deployment Preparation (TASK-077 to TASK-079)"
+    assigned_subagent: "api-engineer"
+    description: "Environment configuration, performance optimization, and security review"

@@ -1,0 +1,90 @@
+---
+globs: *.tsx,*.ts,*.jsx,*.js
+description: shadcn/ui component usage and MCP integration
+---
+
+# shadcn/ui Component Standards
+
+## Component Creation Rules
+
+When creating or modifying React components in this project:
+
+### 1. Use shadcn/ui Components Only
+- **ALWAYS** use shadcn/ui components as the foundation for all UI elements
+- **NEVER** create custom components that replicate shadcn/ui functionality
+- **ALWAYS** check if a shadcn/ui component exists before building custom UI
+
+### 2. shadcn MCP Integration
+- **ALWAYS** use the shadcn MCP (Model Context Protocol) to add new components
+- **ALWAYS** run `npx shadcn@latest add [component-name]` to add new shadcn components
+- **NEVER** manually copy component code from shadcn/ui documentation
+- **ALWAYS** use the MCP to ensure proper integration with your project's configuration
+
+### 3. Component Structure
+- Place all shadcn/ui components in `src/components/ui/` directory
+- Use the aliases defined in [components.json](mdc:components.json):
+  - `@/components` for general components
+  - `@/components/ui` for shadcn/ui components
+  - `@/lib/utils` for utility functions
+  - `@/hooks` for custom hooks
+
+### 4. Required Dependencies
+The project includes these shadcn/ui dependencies:
+- `class-variance-authority` for component variants
+- `clsx` for conditional classes
+- `tailwind-merge` for Tailwind class merging
+- `lucide-react` for icons
+
+### 5. Component Usage Examples
+
+```tsx
+// ✅ CORRECT: Using shadcn/ui components
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+
+export function MyComponent() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>My Component</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Input placeholder="Enter text..." />
+        <Button>Submit</Button>
+      </CardContent>
+    </Card>
+  )
+}
+```
+
+```tsx
+// ❌ INCORRECT: Creating custom components that replicate shadcn/ui
+export function CustomButton({ children, ...props }) {
+  return <button className="px-4 py-2 bg-blue-500 text-white rounded" {...props}>
+    {children}
+  </button>
+}
+```
+
+### 6. Adding New Components
+When you need a new UI component:
+
+1. **First**: Check if it exists in shadcn/ui component library
+2. **Then**: Use the shadcn MCP to add it: `npx shadcn@latest add [component-name]`
+3. **Finally**: Import and use the component from `@/components/ui/[component-name]`
+
+### 7. Styling Guidelines
+- Use Tailwind CSS classes as defined in the shadcn/ui components
+- Leverage CSS variables defined in [globals.css](mdc:src/app/globals.css)
+- Use the `cn()` utility from `@/lib/utils` for conditional classes
+- Follow the "new-york" style defined in [components.json](mdc:components.json)
+
+### 8. Configuration Reference
+- Style: "new-york" (defined in [components.json](mdc:components.json))
+- Base Color: "neutral"
+- Icon Library: "lucide"
+- CSS Variables: enabled
+- RSC (React Server Components): enabled
+
+This ensures consistency, maintainability, and proper integration with the shadcn/ui ecosystem.

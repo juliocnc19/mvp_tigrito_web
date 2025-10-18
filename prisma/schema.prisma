@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,7 +7,7 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-        
+
 // Enums
 enum Role {
   CLIENT
@@ -77,118 +76,147 @@ enum MediaType {
 
 // Models
 model User {
-  id               String    @id @default(cuid())
-  email            String?   @unique
-  phone            String?   @unique
-  password         String?
-  name             String?
-  role             Role      @default(CLIENT)
-  isVerified       Boolean   @default(false)
-  isIDVerified     Boolean   @default(false)
-  balance          Decimal   @default("0.0") @db.Decimal(14,2)
-  isSuspended      Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  deletedAt        DateTime?
+  id           String  @id @default(cuid())
+  email        String? @unique
+  phone        String? @unique
+  password     String?
+  name         String?
+  role         Role    @default(CLIENT)
+  isVerified   Boolean @default(false)
+  isIDVerified Boolean @default(false)
+  balance      Decimal @default("0.0") @db.Decimal(14, 2)
+  isSuspended  Boolean @default(false)
 
-  locationLat      Float?
-  locationLng      Float?
-  locationAddress  String?
+  // Email verification fields
+  emailVerificationToken   String?
+  emailVerificationExpires DateTime?
 
-  professionalProfile ProfessionalProfile?
-  postings           ServicePosting[]         @relation("PostingClient")
-  offers             Offer[]                  @relation("OfferProfessional")
-  proactiveServices  ProfessionalService[]    @relation("ProServices")
-  servicesAsClient   ServiceTransaction[]     @relation("ClientServices")
-  servicesAsPro      ServiceTransaction[]     @relation("ProfessionalServices")
-  reviewsGiven       Review[]                 @relation("Reviewer")
-  reviewsReceived    Review[]                 @relation("Reviewed")
-  payments           Payment[]
-  reportsSent        Report[]                 @relation("Reporter")
-  reportsReceived    Report[]                 @relation("Reported")
-  promoUses          PromoCodeUsage[]
-  devices            Device[]
-  notifications      Notification[]
-  media              Media[]
+  // Password reset fields
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  locationLat     Float?
+  locationLng     Float?
+  locationAddress String?
+
+  professionalProfile        ProfessionalProfile?
+  postings                   ServicePosting[]          @relation("PostingClient")
+  offers                     Offer[]                   @relation("OfferProfessional")
+  proactiveServices          ProfessionalService[]     @relation("ProServices")
+  servicesAsClient           ServiceTransaction[]      @relation("ClientServices")
+  servicesAsPro              ServiceTransaction[]      @relation("ProfessionalServices")
+  reviewsGiven               Review[]                  @relation("Reviewer")
+  reviewsReceived            Review[]                  @relation("Reviewed")
+  payments                   Payment[]
+  reportsSent                Report[]                  @relation("Reporter")
+  reportsReceived            Report[]                  @relation("Reported")
+  promoUses                  PromoCodeUsage[]
+  devices                    Device[]
+  notifications              Notification[]
+  media                      Media[]
   conversationsAsParticipant ConversationParticipant[]
-  messages           Message[]
-  auditLogs          AuditLog[]
-  conversationsCreated Conversation[] @relation("ConversationsCreated")
-  paymentMethods     UserPaymentMethod[]
-  withdrawals        Withdrawal[]
+  messages                   Message[]
+  auditLogs                  AuditLog[]
+  conversationsCreated       Conversation[]            @relation("ConversationsCreated")
+  paymentMethods             UserPaymentMethod[]
+  withdrawals                Withdrawal[]
 
   @@index([role])
   @@index([createdAt])
 }
 
 model ProfessionalProfile {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
-  bio             String?  @db.Text
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id])
+  bio               String?  @db.Text
+  yearsOfExperience Int?
+  certifications    String?
+  specialties       String[]
+  hourlyRate        Decimal? @db.Decimal(14, 2)
+  bankAccount       String?
+  taxId             String?
+  isVerified        Boolean  @default(false)
+
+  // Rating and performance fields
+  rating         Float? @default(0)
+  responseTime   Int? // in hours
+  completionRate Float? @default(0)
+
   earningsSummary Json?
   portfolio       Json?
-  ratingAvg       Float?   @default(0)
-  ratingCount     Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  ratingAvg       Float?    @default(0)
+  ratingCount     Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
 
   professions     ProfessionLink[]
+  servicesOffered ProfessionalService[]
+  reviews         Review[]
 }
 
 model Profession {
-  id             String                @id @default(cuid())
-  name           String                @unique
-  slug           String                @unique
-  description    String?
-  createdAt      DateTime              @default(now())
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
 
-  links          ProfessionLink[]
+  links             ProfessionLink[]
   proactiveServices ProfessionalService[]
-  postings       ServicePosting[]
+  postings          ServicePosting[]
 }
 
 model ProfessionLink {
-  id           String   @id @default(cuid())
+  id           String              @id @default(cuid())
   userId       String
   professionId String
   documents    Json?
-  verified     Boolean  @default(false)
+  verified     Boolean             @default(false)
   userProfile  ProfessionalProfile @relation(fields: [userId], references: [id])
   profession   Profession          @relation(fields: [professionId], references: [id])
 
+  @@unique([userId, professionId])
   @@index([userId])
   @@index([professionId])
-  @@unique([userId, professionId])
 }
 
 model ServicePosting {
-  id            String         @id @default(cuid())
-  clientId      String
-  client        User           @relation("PostingClient", fields: [clientId], references: [id])
-  title         String
-  description   String         @db.Text
-  categoryId    String
-  category      Profession     @relation(fields: [categoryId], references: [id])
+  id          String     @id @default(cuid())
+  clientId    String
+  client      User       @relation("PostingClient", fields: [clientId], references: [id])
+  title       String
+  description String     @db.Text
+  categoryId  String
+  category    Profession @relation(fields: [categoryId], references: [id])
 
-  lat           Float?
-  lng           Float?
-  address       String?
+  lat     Float?
+  lng     Float?
+  address String?
 
-  requiredFrom  DateTime?
-  requiredTo    DateTime?
-  priceMin      Decimal?       @db.Decimal(14,2)
-  priceMax      Decimal?       @db.Decimal(14,2)
-  media         Media[]        @relation("PostingMedia")
-  status        PostingStatus  @default(OPEN)
+  requiredFrom DateTime?
+  requiredTo   DateTime?
+  priceMin     Decimal?      @db.Decimal(14, 2)
+  priceMax     Decimal?      @db.Decimal(14, 2)
+  budget       Decimal?      @db.Decimal(14, 2)
+  locationLat  Float?
+  locationLng  Float?
+  media        Media[]       @relation("PostingMedia")
+  status       PostingStatus @default(OPEN)
 
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  expiresAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime?
+  deletedAt DateTime?
 
   offers        Offer[]
   transaction   ServiceTransaction?
-  transactionId String?       @unique
+  transactionId String?             @unique
 
   @@index([clientId])
   @@index([categoryId])
@@ -197,15 +225,18 @@ model ServicePosting {
 }
 
 model Offer {
-  id             String        @id @default(cuid())
+  id             String         @id @default(cuid())
   postingId      String
   posting        ServicePosting @relation(fields: [postingId], references: [id])
   professionalId String
-  professional   User          @relation("OfferProfessional", fields: [professionalId], references: [id])
-  price          Decimal       @db.Decimal(14,2)
-  message        String?       @db.Text
-  status         OfferStatus   @default(PENDING)
-  createdAt      DateTime      @default(now())
+  professional   User           @relation("OfferProfessional", fields: [professionalId], references: [id])
+  price          Decimal        @db.Decimal(14, 2)
+  proposedPrice  Decimal?       @db.Decimal(14, 2)
+  message        String?        @db.Text
+  status         OfferStatus    @default(PENDING)
+  createdAt      DateTime       @default(now())
+
+  transactions ServiceTransaction[]
 
   @@index([postingId])
   @@index([professionalId])
@@ -218,7 +249,7 @@ model ProfessionalService {
   title            String
   slug             String     @unique
   description      String     @db.Text
-  price            Decimal    @db.Decimal(14,2)
+  price            Decimal    @db.Decimal(14, 2)
   categoryId       String
   category         Profession @relation(fields: [categoryId], references: [id])
   serviceLocations Json?
@@ -227,46 +258,52 @@ model ProfessionalService {
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
-  transactions     ServiceTransaction[]
+  transactions          ServiceTransaction[]
+  ProfessionalProfile   ProfessionalProfile? @relation(fields: [professionalProfileId], references: [id])
+  professionalProfileId String?
 
   @@index([professionalId])
   @@index([categoryId])
 }
 
 model ServiceTransaction {
-  id               String       @id @default(cuid())
-  clientId         String
-  client           User         @relation("ClientServices", fields: [clientId], references: [id])
-  professionalId   String
-  professional     User         @relation("ProfessionalServices", fields: [professionalId], references: [id])
+  id             String @id @default(cuid())
+  clientId       String
+  client         User   @relation("ClientServices", fields: [clientId], references: [id])
+  professionalId String
+  professional   User   @relation("ProfessionalServices", fields: [professionalId], references: [id])
 
-  priceAgreed      Decimal      @db.Decimal(14,2)
-  discountAmount   Decimal      @default("0.0") @db.Decimal(14,2)
-  platformFee      Decimal      @default("0.0") @db.Decimal(14,2)
-  escrowAmount     Decimal      @default("0.0") @db.Decimal(14,2)
+  priceAgreed    Decimal  @db.Decimal(14, 2)
+  agreedPrice    Decimal? @db.Decimal(14, 2)
+  discountAmount Decimal  @default("0.0") @db.Decimal(14, 2)
+  platformFee    Decimal  @default("0.0") @db.Decimal(14, 2)
+  escrowAmount   Decimal  @default("0.0") @db.Decimal(14, 2)
 
-  currentStatus    ServiceStatus @default(PENDING_SOLICITUD)
-  scheduledDate    DateTime?
+  currentStatus ServiceStatus @default(PENDING_SOLICITUD)
+  status        ServiceStatus @default(PENDING_SOLICITUD)
+  scheduledDate DateTime?
 
-  postingId        String?       @unique
-  posting          ServicePosting? @relation(fields: [postingId], references: [id])
-  proServiceId     String?
-  proService       ProfessionalService? @relation(fields: [proServiceId], references: [id])
+  postingId    String?              @unique
+  posting      ServicePosting?      @relation(fields: [postingId], references: [id])
+  proServiceId String?
+  proService   ProfessionalService? @relation(fields: [proServiceId], references: [id])
+  offerId      String?
 
-  promoCodeId      String?
-  promoCode        PromoCode?   @relation(name: "PromoCodeUsedTransactions", fields: [promoCodeId], references: [id])
+  promoCodeId String?
+  promoCode   PromoCode? @relation(name: "PromoCodeUsedTransactions", fields: [promoCodeId], references: [id])
 
-  yummyLogistics   Json?
-  notes            String?      @db.Text
+  yummyLogistics Json?
+  notes          String? @db.Text
 
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  completedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
 
-  reviews          Review[]
-  payment          Payment?
-  reports          Report[]
-  media            Media[]
+  reviews Review[]
+  payment Payment?
+  reports Report[]
+  media   Media[]
+  offer   Offer?   @relation(fields: [offerId], references: [id])
 
   @@index([clientId])
   @@index([professionalId])
@@ -275,92 +312,95 @@ model ServiceTransaction {
 }
 
 model Payment {
-  id               String       @id @default(cuid())
-  userId           String
-  user             User         @relation(fields: [userId], references: [id])
-  transactionId    String?      @unique
-  transaction      ServiceTransaction? @relation(fields: [transactionId], references: [id])
-  amount           Decimal      @db.Decimal(14,2)
-  fee              Decimal      @default("0.0") @db.Decimal(14,2)
-  method           PaymentMethod
-  status           PaymentStatus @default(PENDING)
-  details          Json?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  id            String              @id @default(cuid())
+  userId        String
+  user          User                @relation(fields: [userId], references: [id])
+  recipientId   String?
+  transactionId String?             @unique
+  transaction   ServiceTransaction? @relation(fields: [transactionId], references: [id])
+  amount        Decimal             @db.Decimal(14, 2)
+  fee           Decimal             @default("0.0") @db.Decimal(14, 2)
+  method        PaymentMethod
+  status        PaymentStatus       @default(PENDING)
+  details       Json?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 
   @@index([userId])
   @@index([status])
 }
 
 model UserPaymentMethod {
-  id              String        @id @default(cuid())
-  userId          String
-  user            User          @relation(fields: [userId], references: [id])
-  method          PaymentMethod
-  accountNumber   String?       // Número de cuenta o similar
-  accountAlias    String?       // Alias o nombre de la cuenta
-  idNumber        String?       // Número de identificación del titular
-  phoneNumber     String?       // Teléfono asociado (para Pay Mobile, etc)
-  details         Json?         // Otros detalles específicos del método
-  isVerified      Boolean       @default(false)
-  isDefault       Boolean       @default(false)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
-  withdrawals     Withdrawal[]
-  
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  method        PaymentMethod
+  accountNumber String? // Número de cuenta o similar
+  accountAlias  String? // Alias o nombre de la cuenta
+  idNumber      String? // Número de identificación del titular
+  phoneNumber   String? // Teléfono asociado (para Pay Mobile, etc)
+  details       Json? // Otros detalles específicos del método
+  isVerified    Boolean       @default(false)
+  isDefault     Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  withdrawals Withdrawal[]
+
   @@index([userId])
   @@index([userId, isDefault])
 }
 
 model Withdrawal {
-  id                String             @id @default(cuid())
-  userId            String
-  user              User               @relation(fields: [userId], references: [id])
-  paymentMethodId   String
-  paymentMethod     UserPaymentMethod  @relation(fields: [paymentMethodId], references: [id])
-  amount            Decimal            @db.Decimal(14,2)
-  status            WithdrawalStatus   @default(PENDING)
-  requestedAt       DateTime           @default(now())
-  completedAt       DateTime?
-  adminNotes        String?            @db.Text
-  rejectionReason   String?            @db.Text
-  
+  id              String            @id @default(cuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id])
+  paymentMethodId String
+  paymentMethod   UserPaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  amount          Decimal           @db.Decimal(14, 2)
+  status          WithdrawalStatus  @default(PENDING)
+  requestedAt     DateTime          @default(now())
+  completedAt     DateTime?
+  adminNotes      String?           @db.Text
+  rejectionReason String?           @db.Text
+
   @@index([userId])
   @@index([status])
   @@index([requestedAt])
 }
 
 model Review {
-  id             String    @id @default(cuid())
-  transactionId  String
-  transaction    ServiceTransaction @relation(fields: [transactionId], references: [id])
-  reviewerId     String
-  reviewer       User      @relation("Reviewer", fields: [reviewerId], references: [id])
-  reviewedId     String
-  reviewed       User      @relation("Reviewed", fields: [reviewedId], references: [id])
-  rating         Int       @db.SmallInt
-  comment        String?   @db.Text
-  isProReview    Boolean
-  createdAt      DateTime  @default(now())
+  id                    String               @id @default(cuid())
+  transactionId         String
+  transaction           ServiceTransaction   @relation(fields: [transactionId], references: [id])
+  reviewerId            String
+  reviewer              User                 @relation("Reviewer", fields: [reviewerId], references: [id])
+  reviewedId            String
+  reviewed              User                 @relation("Reviewed", fields: [reviewedId], references: [id])
+  rating                Int                  @db.SmallInt
+  comment               String?              @db.Text
+  isProReview           Boolean
+  createdAt             DateTime             @default(now())
+  ProfessionalProfile   ProfessionalProfile? @relation(fields: [professionalProfileId], references: [id])
+  professionalProfileId String?
 
   @@unique([reviewerId, reviewedId, transactionId])
 }
 
 model Report {
-  id             String   @id @default(cuid())
-  reporterId     String
-  reporter       User     @relation("Reporter", fields: [reporterId], references: [id])
-  reportedId     String?
-  reportedUser   User?    @relation("Reported", fields: [reportedId], references: [id])
-  serviceId      String?
-  service        ServiceTransaction? @relation(fields: [serviceId], references: [id])
-  reason         String   @db.Text
-  proofMedia     Json?
-  status         String   @default("PENDING")
-  adminNotes     String?  @db.Text
-  createdAt      DateTime @default(now())
-  media          Media[]
+  id           String              @id @default(cuid())
+  reporterId   String
+  reporter     User                @relation("Reporter", fields: [reporterId], references: [id])
+  reportedId   String?
+  reportedUser User?               @relation("Reported", fields: [reportedId], references: [id])
+  serviceId    String?
+  service      ServiceTransaction? @relation(fields: [serviceId], references: [id])
+  reason       String              @db.Text
+  proofMedia   Json?
+  status       String              @default("PENDING")
+  adminNotes   String?             @db.Text
+  createdAt    DateTime            @default(now())
+  media        Media[]
 
   @@index([reporterId])
   @@index([reportedId])
@@ -384,74 +424,74 @@ model AdCampaign {
 }
 
 model PromoCode {
-  id              String        @id @default(cuid())
-  code            String        @unique
-  discountType    DiscountType
-  discountValue   Decimal       @db.Decimal(14,2)
-  maxUses         Int?
-  usesCount       Int           @default(0)
-  maxUsesPerUser  Int?
-  validFrom       DateTime      @default(now())
-  validUntil      DateTime?
-  targetCategory  String?
-  isActive        Boolean       @default(true)
-  transactions    ServiceTransaction[] @relation(name: "PromoCodeUsedTransactions")
-  usageHistory    PromoCodeUsage[]
-  createdAt       DateTime      @default(now())
+  id             String               @id @default(cuid())
+  code           String               @unique
+  discountType   DiscountType
+  discountValue  Decimal              @db.Decimal(14, 2)
+  maxUses        Int?
+  usesCount      Int                  @default(0)
+  maxUsesPerUser Int?
+  validFrom      DateTime             @default(now())
+  validUntil     DateTime?
+  targetCategory String?
+  isActive       Boolean              @default(true)
+  transactions   ServiceTransaction[] @relation(name: "PromoCodeUsedTransactions")
+  usageHistory   PromoCodeUsage[]
+  createdAt      DateTime             @default(now())
 }
 
 model PromoCodeUsage {
-  id        String   @id @default(cuid())
-  codeId    String
-  code      PromoCode @relation(fields: [codeId], references: [id])
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  usedAt    DateTime  @default(now())
+  id     String    @id @default(cuid())
+  codeId String
+  code   PromoCode @relation(fields: [codeId], references: [id])
+  userId String
+  user   User      @relation(fields: [userId], references: [id])
+  usedAt DateTime  @default(now())
 
   @@unique([codeId, userId])
 }
 
 model Media {
-  id            String    @id @default(cuid())
+  id            String               @id @default(cuid())
   url           String
   type          MediaType
   filename      String?
   sizeBytes     Int?
   uploadedById  String?
-  uploadedBy    User?     @relation(fields: [uploadedById], references: [id])
+  uploadedBy    User?                @relation(fields: [uploadedById], references: [id])
   postingId     String?
-  posting       ServicePosting? @relation("PostingMedia", fields: [postingId], references: [id])
+  posting       ServicePosting?      @relation("PostingMedia", fields: [postingId], references: [id])
   proServiceId  String?
   proService    ProfessionalService? @relation("ProServiceMedia", fields: [proServiceId], references: [id])
   transactionId String?
-  transaction   ServiceTransaction? @relation(fields: [transactionId], references: [id])
+  transaction   ServiceTransaction?  @relation(fields: [transactionId], references: [id])
   reportId      String?
-  report        Report?   @relation(fields: [reportId], references: [id])
-  createdAt     DateTime  @default(now())
+  report        Report?              @relation(fields: [reportId], references: [id])
+  createdAt     DateTime             @default(now())
 
   @@index([uploadedById])
 }
 
 model Device {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  deviceId   String
-  pushToken  String?
-  lastSeen   DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  deviceId  String
+  pushToken String?
+  lastSeen  DateTime @default(now())
 
   @@unique([userId, deviceId])
 }
 
 model Notification {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  title      String
-  body       String
-  data       Json?
-  read       Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  body      String
+  data      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model AuditLog {
@@ -465,37 +505,37 @@ model AuditLog {
 
 // Chat models (added)
 model Conversation {
-  id          String   @id @default(cuid())
-  createdById String
-  createdBy   User     @relation("ConversationsCreated", fields: [createdById], references: [id])
+  id           String                    @id @default(cuid())
+  createdById  String
+  createdBy    User                      @relation("ConversationsCreated", fields: [createdById], references: [id])
   participants ConversationParticipant[]
-  messages    Message[]
-  createdAt   DateTime @default(now())
+  messages     Message[]
+  createdAt    DateTime                  @default(now())
 
   @@index([createdById])
 }
 
 model ConversationParticipant {
-  id             String @id @default(cuid())
-  conversationId  String
-  conversation    Conversation @relation(fields: [conversationId], references: [id])
-  userId          String
-  user            User @relation(fields: [userId], references: [id])
-  joinedAt        DateTime @default(now())
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  joinedAt       DateTime     @default(now())
 
   @@unique([conversationId, userId])
 }
 
 model Message {
-  id             String @id @default(cuid())
-  conversationId  String
-  conversation    Conversation @relation(fields: [conversationId], references: [id])
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
   senderId       String
-  sender         User @relation(fields: [senderId], references: [id])
+  sender         User         @relation(fields: [senderId], references: [id])
   text           String?
-  mediaIds       String?  // JSON string array of media IDs or store as JSON in some DBs
-  readBy         String?  // optional: JSON array of userIds who read
-  createdAt      DateTime @default(now())
+  mediaIds       String? // JSON string array of media IDs or store as JSON in some DBs
+  readBy         String? // optional: JSON array of userIds who read
+  createdAt      DateTime     @default(now())
 
   @@index([conversationId])
   @@index([senderId])

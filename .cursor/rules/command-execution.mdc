@@ -1,0 +1,83 @@
+---
+alwaysApply: true
+description: Command execution preference for terminal issues
+---
+
+# Command Execution Guidelines
+
+## Terminal Command Handling
+
+Due to terminal environment issues where the editor doesn't recognize `node`, `npm`, and other commands:
+
+### 1. Command Provision Only
+- **NEVER** use `run_terminal_cmd` tool to execute commands
+- **ALWAYS** provide commands as text output for manual execution
+- **ALWAYS** include the full command with proper working directory context
+
+### 2. Command Format
+When providing commands, use this format:
+
+```bash
+# Working directory: /home/julio/workspace/mvp_tigrito_web
+cd /home/julio/workspace/mvp_tigrito_web && [command]
+```
+
+### 3. Common Commands Reference
+
+#### Package Management
+```bash
+# Install dependencies
+cd /home/julio/workspace/mvp_tigrito_web && npm install
+
+# Add new package
+cd /home/julio/workspace/mvp_tigrito_web && npm install [package-name]
+
+# Add dev dependency
+cd /home/julio/workspace/mvp_tigrito_web && npm install -D [package-name]
+```
+
+#### shadcn/ui Commands
+```bash
+# Add shadcn component
+cd /home/julio/workspace/mvp_tigrito_web && npx shadcn@latest add [component-name]
+
+# Initialize shadcn (if needed)
+cd /home/julio/workspace/mvp_tigrito_web && npx shadcn@latest init
+```
+
+#### Development Commands
+```bash
+# Start development server
+cd /home/julio/workspace/mvp_tigrito_web && npm run dev
+
+# Build project
+cd /home/julio/workspace/mvp_tigrito_web && npm run build
+
+# Run linting
+cd /home/julio/workspace/mvp_tigrito_web && npm run lint
+```
+
+#### Database Commands
+```bash
+# Generate Prisma client
+cd /home/julio/workspace/mvp_tigrito_web && npx prisma generate
+
+# Run database migrations
+cd /home/julio/workspace/mvp_tigrito_web && npx prisma migrate dev
+
+# Reset database
+cd /home/julio/workspace/mvp_tigrito_web && npx prisma migrate reset
+```
+
+### 4. Command Context
+- **ALWAYS** include the full path to the project directory
+- **ALWAYS** use `cd` command to ensure proper working directory
+- **ALWAYS** provide clear instructions about what the command does
+- **ALWAYS** mention if the command should be run in a specific terminal or environment
+
+### 5. Error Handling
+If a command fails when you execute it manually:
+- Check if you're in the correct directory
+- Verify that Node.js and npm are properly installed in your system PATH
+- Ensure all dependencies are installed with `npm install`
+- Check for any permission issues

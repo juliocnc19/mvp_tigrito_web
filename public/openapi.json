@@ -32,6 +32,22 @@
           "email"
         ]
       },
+      "GoogleAuthRequestSchema": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idToken": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
       "LoginRequestSchema": {
         "type": "object",
         "properties": {
@@ -52,6 +68,26 @@
           "password"
         ]
       },
+      "AuthResponseSchema": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object"
+          },
+          "token": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user",
+          "user",
+          "token",
+          "refreshToken"
+        ]
+      },
       "RefreshTokenRequestSchema": {
         "type": "object",
         "properties": {
@@ -68,12 +104,10 @@
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
-            "nullable": true
+            "format": "email"
           },
           "phone": {
             "type": "string",
-            "minLength": 10,
             "nullable": true
           },
           "password": {
@@ -89,6 +123,7 @@
           }
         },
         "required": [
+          "email",
           "password",
           "name",
           "role"
@@ -97,6 +132,14 @@
       "CreateProfessionalProfileRequestSchema": {
         "type": "object",
         "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          },
           "bio": {
             "type": "string",
             "maxLength": 1000,
@@ -132,11 +175,30 @@
             "type": "string",
             "nullable": true
           }
-        }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "ProfessionalProfileResponseSchema": {
+        "type": "object",
+        "properties": {
+          "professional": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "professional",
+          "professional"
+        ]
       },
       "UpdateProfessionalProfileRequestSchema": {
         "type": "object",
         "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
           "bio": {
             "type": "string",
             "maxLength": 1000,
@@ -168,11 +230,86 @@
             "type": "string",
             "nullable": true
           }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "UpdateProfessionRequestSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 2,
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
         }
+      },
+      "ProfessionResponseSchema": {
+        "type": "object",
+        "properties": {
+          "profession": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "profession",
+          "profession"
+        ]
+      },
+      "CreateProfessionRequestSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 2
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "slug"
+        ]
+      },
+      "AcceptOfferRequestSchema": {
+        "type": "object",
+        "properties": {
+          "agreedPrice": {
+            "type": "number",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "agreedPrice"
+        ]
       },
       "CreateServiceOfferRequestSchema": {
         "type": "object",
         "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
           "postingId": {
             "type": "string"
           },
@@ -191,10 +328,23 @@
           }
         },
         "required": [
+          "userId",
           "postingId",
           "proposedPrice",
           "description",
           "estimatedDuration"
+        ]
+      },
+      "ServiceOfferResponseSchema": {
+        "type": "object",
+        "properties": {
+          "offer": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "offer",
+          "offer"
         ]
       },
       "CreateServicePostingRequestSchema": {
@@ -253,6 +403,262 @@
           "title",
           "description",
           "categoryId"
+        ]
+      },
+      "ServicePostingResponseSchema": {
+        "type": "object",
+        "properties": {
+          "posting": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "posting",
+          "posting"
+        ]
+      },
+      "ServicePostingsListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "postings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServicePostingSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "postings",
+          "total"
+        ]
+      },
+      "RequestProfessionalServiceSchema": {
+        "type": "object",
+        "properties": {
+          "professionalServiceId": {
+            "type": "string"
+          },
+          "agreedPrice": {
+            "type": "number",
+            "minimum": 0
+          },
+          "scheduledDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "promoCodeId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "professionalServiceId",
+          "agreedPrice"
+        ]
+      },
+      "UpdateReviewRequestSchema": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "nullable": true
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "CreateReviewRequestSchema": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "transactionId": {
+            "type": "string"
+          },
+          "reviewedId": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "isProReview": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "userId",
+          "transactionId",
+          "reviewedId",
+          "rating",
+          "isProReview"
+        ]
+      },
+      "CompleteTransactionSchema": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "finalAmount": {
+            "type": "number",
+            "minimum": 0,
+            "nullable": true
+          }
+        }
+      },
+      "UpdateTransactionStatusSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING_SOLICITUD",
+              "SCHEDULED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELED"
+            ]
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "scheduledDate": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "OTPSendRequestSchema": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "pattern": "^04\\d{9}$",
+            "minLength": 11
+          }
+        },
+        "required": [
+          "phoneNumber"
+        ]
+      },
+      "IDVerificationRequestSchema": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cedula": {
+            "type": "string",
+            "pattern": "^\\d{7,8}$",
+            "minLength": 7
+          },
+          "cedulaImage": {
+            "type": "string",
+            "minLength": 1
+          },
+          "faceScanData": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "userId",
+          "cedula",
+          "cedulaImage",
+          "faceScanData"
+        ]
+      },
+      "OTPVerifyRequestSchema": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phoneNumber": {
+            "type": "string",
+            "pattern": "^04\\d{9}$",
+            "minLength": 8
+          },
+          "otpCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "phoneNumber",
+          "otpCode"
+        ]
+      },
+      "UpdateWithdrawalStatusRequestSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "COMPLETED",
+              "FAILED"
+            ]
+          },
+          "adminNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "rejectionReason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "CreateWithdrawalRequestSchema": {
+        "type": "object",
+        "properties": {
+          "paymentMethodId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          }
+        },
+        "required": [
+          "paymentMethodId",
+          "amount"
         ]
       },
       "AdCampaignSchema": {
@@ -585,6 +991,30 @@
           "FAILED"
         ]
       },
+      "ConversationTypeSchema": {
+        "type": "string",
+        "enum": [
+          "CLIENT_PROFESSIONAL",
+          "SUPPORT"
+        ]
+      },
+      "MessageRoleSchema": {
+        "type": "string",
+        "enum": [
+          "USER",
+          "ASSISTANT",
+          "SYSTEM"
+        ]
+      },
+      "MessageTypeSchema": {
+        "type": "string",
+        "enum": [
+          "TEXT",
+          "IMAGE",
+          "FILE",
+          "SYSTEM"
+        ]
+      },
       "AuditLogSchema": {
         "type": "object",
         "properties": {
@@ -609,21 +1039,6 @@
           "id",
           "action",
           "createdAt"
-        ]
-      },
-      "CreateAuditLogRequestSchema": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "minLength": 1
-          },
-          "meta": {
-            "nullable": true
-          }
-        },
-        "required": [
-          "action"
         ]
       },
       "GetAuditLogsQuerySchema": {
@@ -660,6 +1075,50 @@
         "required": [
           "page",
           "limit"
+        ]
+      },
+      "AuditLogsListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "auditLogs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditLogWithRelationsSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "auditLogs",
+          "total"
+        ]
+      },
+      "AuditLogWithRelationsSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string",
+            "nullable": true
+          },
+          "action": {
+            "type": "string"
+          },
+          "meta": {
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "createdAt"
         ]
       },
       "ResetPasswordRequestSchema": {
@@ -758,22 +1217,6 @@
           "updatedAt"
         ]
       },
-      "AuthResponseSchema": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "type": "object"
-          },
-          "token": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "user",
-          "user",
-          "token"
-        ]
-      },
       "RefreshTokenResponseSchema": {
         "type": "object",
         "properties": {
@@ -807,27 +1250,27 @@
           },
           "createdAt": {
             "type": "string"
+          },
+          "jobId": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "object"
+          },
+          "updatedAt": {
+            "type": "string"
           }
         },
         "required": [
           "id",
           "createdById",
-          "createdAt"
-        ]
-      },
-      "CreateConversationRequestSchema": {
-        "type": "object",
-        "properties": {
-          "participantIds": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "minItems": 1
-          }
-        },
-        "required": [
-          "participantIds"
+          "createdAt",
+          "updatedAt"
         ]
       },
       "MessageSchema": {
@@ -856,21 +1299,64 @@
           },
           "createdAt": {
             "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "isRead": {
+            "type": "boolean"
+          },
+          "messageType": {
+            "type": "object"
           }
         },
         "required": [
           "id",
           "conversationId",
           "senderId",
-          "createdAt"
+          "createdAt",
+          "isRead"
+        ]
+      },
+      "CreateConversationRequestSchema": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "object"
+          },
+          "participantIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "participantIds"
         ]
       },
       "SendMessageRequestSchema": {
         "type": "object",
         "properties": {
-          "text": {
+          "conversationId": {
+            "type": "string"
+          },
+          "content": {
             "type": "string",
-            "nullable": true
+            "minLength": 1
+          },
+          "messageType": {
+            "type": "object"
           },
           "mediaIds": {
             "type": "array",
@@ -879,7 +1365,46 @@
             },
             "nullable": true
           }
-        }
+        },
+        "required": [
+          "conversationId",
+          "content"
+        ]
+      },
+      "GetConversationsQuerySchema": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "minimum": 1,
+            "default": 1
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10
+          },
+          "createdById": {
+            "type": "string",
+            "nullable": true
+          },
+          "jobId": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "object"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "page",
+          "limit"
+        ]
       },
       "GetMessagesQuerySchema": {
         "type": "object",
@@ -895,14 +1420,141 @@
             "maximum": 100,
             "default": 10
           },
-          "before": {
+          "conversationId": {
+            "type": "string"
+          },
+          "senderId": {
             "type": "string",
+            "nullable": true
+          },
+          "messageType": {
+            "type": "object"
+          },
+          "isRead": {
+            "type": "boolean",
             "nullable": true
           }
         },
         "required": [
           "page",
-          "limit"
+          "limit",
+          "conversationId"
+        ]
+      },
+      "ConversationsListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "conversations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationWithRelationsSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "conversations",
+          "total"
+        ]
+      },
+      "MessagesListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageWithRelationsSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "messages",
+          "total"
+        ]
+      },
+      "MessageWithRelationsSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "conversationId": {
+            "type": "string"
+          },
+          "senderId": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaIds": {
+            "type": "string",
+            "nullable": true
+          },
+          "readBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "isRead": {
+            "type": "boolean"
+          },
+          "messageType": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "conversationId",
+          "senderId",
+          "createdAt",
+          "isRead"
+        ]
+      },
+      "ConversationWithRelationsSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdById": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "object"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "createdById",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "MediaSchema": {
@@ -957,23 +1609,6 @@
           "createdAt"
         ]
       },
-      "UploadMediaRequestSchema": {
-        "type": "object",
-        "properties": {
-          "files": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "type": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "files"
-        ]
-      },
       "GetMediaQuerySchema": {
         "type": "object",
         "properties": {
@@ -988,12 +1623,12 @@
             "maximum": 100,
             "default": 10
           },
+          "type": {
+            "type": "object"
+          },
           "uploadedById": {
             "type": "string",
             "nullable": true
-          },
-          "type": {
-            "type": "object"
           },
           "postingId": {
             "type": "string",
@@ -1006,11 +1641,85 @@
           "transactionId": {
             "type": "string",
             "nullable": true
+          },
+          "reportId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
           "page",
           "limit"
+        ]
+      },
+      "MediaListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "media": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MediaWithRelationsSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "media",
+          "total"
+        ]
+      },
+      "MediaWithRelationsSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "filename": {
+            "type": "string",
+            "nullable": true
+          },
+          "sizeBytes": {
+            "type": "number",
+            "nullable": true
+          },
+          "uploadedById": {
+            "type": "string",
+            "nullable": true
+          },
+          "postingId": {
+            "type": "string",
+            "nullable": true
+          },
+          "proServiceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportId": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "type",
+          "type",
+          "createdAt"
         ]
       },
       "OverviewMetricsResponseSchema": {
@@ -1194,6 +1903,17 @@
           "body"
         ]
       },
+      "MarkNotificationReadRequestSchema": {
+        "type": "object",
+        "properties": {
+          "notificationId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "notificationId"
+        ]
+      },
       "GetNotificationsQuerySchema": {
         "type": "object",
         "properties": {
@@ -1208,14 +1928,74 @@
             "maximum": 100,
             "default": 10
           },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
           "read": {
             "type": "boolean",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
             "nullable": true
           }
         },
         "required": [
           "page",
           "limit"
+        ]
+      },
+      "NotificationsListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "notifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationWithRelationsSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "notifications",
+          "total"
+        ]
+      },
+      "NotificationWithRelationsSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "data": {
+            "nullable": true
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "title",
+          "body",
+          "read",
+          "createdAt"
         ]
       },
       "OfferSchema": {
@@ -1242,6 +2022,10 @@
           },
           "createdAt": {
             "type": "string"
+          },
+          "proposedPrice": {
+            "type": "number",
+            "nullable": true
           }
         },
         "required": [
@@ -1267,6 +2051,11 @@
           "message": {
             "type": "string",
             "nullable": true
+          },
+          "proposedPrice": {
+            "type": "number",
+            "minimum": 0,
+            "nullable": true
           }
         },
         "required": [
@@ -1274,20 +2063,27 @@
           "price"
         ]
       },
-      "UpdateOfferStatusRequestSchema": {
+      "UpdateOfferRequestSchema": {
         "type": "object",
         "properties": {
-          "status": {
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "nullable": true
+          },
+          "message": {
             "type": "string",
-            "enum": [
-              "ACCEPTED",
-              "REJECTED"
-            ]
+            "nullable": true
+          },
+          "proposedPrice": {
+            "type": "number",
+            "minimum": 0,
+            "nullable": true
+          },
+          "status": {
+            "type": "object"
           }
-        },
-        "required": [
-          "status"
-        ]
+        }
       },
       "GetOffersQuerySchema": {
         "type": "object",
@@ -1313,11 +2109,142 @@
           },
           "status": {
             "type": "object"
+          },
+          "minPrice": {
+            "type": "number",
+            "nullable": true
+          },
+          "maxPrice": {
+            "type": "number",
+            "nullable": true
           }
         },
         "required": [
           "page",
           "limit"
+        ]
+      },
+      "OffersListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "offers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfferWithRelationsSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "offers",
+          "total"
+        ]
+      },
+      "OfferWithRelationsSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "postingId": {
+            "type": "string"
+          },
+          "professionalId": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "object"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "proposedPrice": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "postingId",
+          "professionalId",
+          "price",
+          "status",
+          "status",
+          "createdAt"
+        ]
+      },
+      "OTPSendResponseSchema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "expiresIn": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "message",
+          "expiresIn"
+        ]
+      },
+      "OTPVerifyResponseSchema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "message",
+          "verified"
+        ]
+      },
+      "OTPDataSchema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{5}$"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "attempts": {
+            "type": "number",
+            "minimum": 0
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "phoneNumber",
+          "createdAt",
+          "expiresAt",
+          "attempts",
+          "verified"
         ]
       },
       "UserPaymentMethodSchema": {
@@ -1798,46 +2725,6 @@
           "createdAt"
         ]
       },
-      "CreateProfessionRequestSchema": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "minLength": 2
-          },
-          "slug": {
-            "type": "string",
-            "minLength": 2
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "name",
-          "slug"
-        ]
-      },
-      "UpdateProfessionRequestSchema": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "minLength": 2,
-            "nullable": true
-          },
-          "slug": {
-            "type": "string",
-            "minLength": 2,
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
       "GetProfessionsQuerySchema": {
         "type": "object",
         "properties": {
@@ -1860,6 +2747,24 @@
         "required": [
           "page",
           "limit"
+        ]
+      },
+      "ProfessionsListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "professions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfessionSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "professions",
+          "total"
         ]
       },
       "ProfessionalServiceSchema": {
@@ -1897,6 +2802,10 @@
           },
           "updatedAt": {
             "type": "string"
+          },
+          "professionalProfileId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
@@ -1983,6 +2892,10 @@
           "serviceLocations": {
             "nullable": true
           },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          },
           "mediaIds": {
             "type": "array",
             "items": {
@@ -2006,10 +2919,6 @@
             "maximum": 100,
             "default": 10
           },
-          "search": {
-            "type": "string",
-            "nullable": true
-          },
           "professionalId": {
             "type": "string",
             "nullable": true
@@ -2018,24 +2927,112 @@
             "type": "string",
             "nullable": true
           },
-          "priceMin": {
-            "type": "number",
-            "minimum": 0,
-            "nullable": true
-          },
-          "priceMax": {
-            "type": "number",
-            "minimum": 0,
+          "search": {
+            "type": "string",
             "nullable": true
           },
           "isActive": {
             "type": "boolean",
+            "nullable": true
+          },
+          "minPrice": {
+            "type": "number",
+            "minimum": 0,
+            "nullable": true
+          },
+          "maxPrice": {
+            "type": "number",
+            "minimum": 0,
             "nullable": true
           }
         },
         "required": [
           "page",
           "limit"
+        ]
+      },
+      "ProfessionalServicesListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfessionalServiceWithRelationsSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "services",
+          "total"
+        ]
+      },
+      "ProfessionalServiceResponseSchema": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "service",
+          "service"
+        ]
+      },
+      "ProfessionalServiceWithRelationsSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "professionalId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "serviceLocations": {
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "professionalProfileId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "professionalId",
+          "title",
+          "slug",
+          "description",
+          "price",
+          "categoryId",
+          "isActive",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "ProfessionalProfileSchema": {
@@ -2177,7 +3174,8 @@
               "rating",
               "experience",
               "hourlyRate",
-              "recent"
+              "recent",
+              "quality"
             ],
             "nullable": true
           },
@@ -2244,18 +3242,6 @@
         "required": [
           "professionals",
           "total"
-        ]
-      },
-      "ProfessionalProfileResponseSchema": {
-        "type": "object",
-        "properties": {
-          "professional": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "professional",
-          "professional"
         ]
       },
       "ProfessionalStatsResponseSchema": {
@@ -2707,50 +3693,6 @@
           "createdAt"
         ]
       },
-      "CreateReviewRequestSchema": {
-        "type": "object",
-        "properties": {
-          "transactionId": {
-            "type": "string"
-          },
-          "reviewedId": {
-            "type": "string"
-          },
-          "rating": {
-            "type": "number",
-            "minimum": 1,
-            "maximum": 5
-          },
-          "comment": {
-            "type": "string",
-            "nullable": true
-          },
-          "isProReview": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "transactionId",
-          "reviewedId",
-          "rating",
-          "isProReview"
-        ]
-      },
-      "UpdateReviewRequestSchema": {
-        "type": "object",
-        "properties": {
-          "rating": {
-            "type": "number",
-            "minimum": 1,
-            "maximum": 5,
-            "nullable": true
-          },
-          "comment": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
       "GetReviewsQuerySchema": {
         "type": "object",
         "properties": {
@@ -2785,6 +3727,36 @@
         "required": [
           "page",
           "limit"
+        ]
+      },
+      "ReviewResponseSchema": {
+        "type": "object",
+        "properties": {
+          "review": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "review",
+          "review"
+        ]
+      },
+      "ReviewsListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "reviews": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "reviews",
+          "total"
         ]
       },
       "ServiceOfferSchema": {
@@ -3053,48 +4025,6 @@
           "sortDirection"
         ]
       },
-      "ServicePostingResponseSchema": {
-        "type": "object",
-        "properties": {
-          "posting": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "posting",
-          "posting"
-        ]
-      },
-      "ServicePostingsListResponseSchema": {
-        "type": "object",
-        "properties": {
-          "postings": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ServicePostingSchema"
-            }
-          },
-          "total": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "postings",
-          "total"
-        ]
-      },
-      "ServiceOfferResponseSchema": {
-        "type": "object",
-        "properties": {
-          "offer": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "offer",
-          "offer"
-        ]
-      },
       "ServiceOffersListResponseSchema": {
         "type": "object",
         "properties": {
@@ -3141,17 +4071,6 @@
         "required": [
           "transactions",
           "total"
-        ]
-      },
-      "AcceptOfferRequestSchema": {
-        "type": "object",
-        "properties": {
-          "offerId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "offerId"
         ]
       },
       "CompleteServiceRequestSchema": {
@@ -3243,9 +4162,43 @@
           "limit"
         ]
       },
+      "TransactionResponseSchema": {
+        "type": "object",
+        "properties": {
+          "transaction": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "transaction",
+          "transaction"
+        ]
+      },
+      "TransactionsListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceTransactionSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "transactions",
+          "total"
+        ]
+      },
       "UpdateUserProfileRequestSchema": {
         "type": "object",
         "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
           "name": {
             "type": "string",
             "minLength": 2,
@@ -3268,7 +4221,10 @@
             "type": "string",
             "nullable": true
           }
-        }
+        },
+        "required": [
+          "userId"
+        ]
       },
       "GetUsersQuerySchema": {
         "type": "object",
@@ -3483,6 +4439,53 @@
           "updatedAt"
         ]
       },
+      "PhoneVerificationRequestSchema": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "pattern": "^04\\d{9}$",
+            "minLength": 11
+          }
+        },
+        "required": [
+          "phoneNumber"
+        ]
+      },
+      "IDVerificationResponseSchema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "verificationId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "message",
+          "verified"
+        ]
+      },
+      "PhoneVerificationResponseSchema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "message",
+          "verified"
+        ]
+      },
       "WithdrawalSchema": {
         "type": "object",
         "properties": {
@@ -3527,45 +4530,6 @@
           "requestedAt"
         ]
       },
-      "CreateWithdrawalRequestSchema": {
-        "type": "object",
-        "properties": {
-          "paymentMethodId": {
-            "type": "string"
-          },
-          "amount": {
-            "type": "number",
-            "minimum": 0.01
-          }
-        },
-        "required": [
-          "paymentMethodId",
-          "amount"
-        ]
-      },
-      "UpdateWithdrawalStatusRequestSchema": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "COMPLETED",
-              "FAILED"
-            ]
-          },
-          "adminNotes": {
-            "type": "string",
-            "nullable": true
-          },
-          "rejectionReason": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "status"
-        ]
-      },
       "GetWithdrawalsQuerySchema": {
         "type": "object",
         "properties": {
@@ -3586,11 +4550,81 @@
           },
           "status": {
             "type": "object"
+          },
+          "dateFrom": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateTo": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
           "page",
           "limit"
+        ]
+      },
+      "WithdrawalsListResponseSchema": {
+        "type": "object",
+        "properties": {
+          "withdrawals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WithdrawalWithRelationsSchema"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "withdrawals",
+          "total"
+        ]
+      },
+      "WithdrawalWithRelationsSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "paymentMethodId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "object"
+          },
+          "requestedAt": {
+            "type": "string"
+          },
+          "completedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "adminNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "rejectionReason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "paymentMethodId",
+          "amount",
+          "status",
+          "status",
+          "requestedAt"
         ]
       }
     },
@@ -3719,6 +4753,35 @@
   },
   "outputDir": "./public",
   "paths": {
+    "/admin/stats": {
+      "get": {
+        "operationId": "get-admin-stats",
+        "summary": "Get admin statistics",
+        "description": "Retrieve comprehensive statistics for admin dashboard",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminStatsResponse:Admin statistics retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/auth/forgot-password": {
       "post": {
         "operationId": "post-auth-forgot-password",
@@ -3757,6 +4820,51 @@
         }
       }
     },
+    "/auth/google": {
+      "post": {
+        "operationId": "post-auth-google",
+        "summary": "Google OAuth Authentication",
+        "description": "Authenticate user with Google OAuth token",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleAuthRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseSchema:Authentication successful"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invalid token"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "post-auth-login",
@@ -3776,12 +4884,12 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponseSchema:Login successful"
+                  "$ref": "#/components/schemas/AuthResponseSchema"
                 }
               }
             }
@@ -4112,7 +5220,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProfessionalProfileResponseSchema:Professional profile created successfully"
+                  "$ref": "#/components/schemas/ProfessionalProfileResponseSchema"
                 }
               }
             }
@@ -4193,6 +5301,187 @@
         }
       }
     },
+    "/professions/{id}": {
+      "get": {
+        "operationId": "get-professions-{id}",
+        "summary": "Get profession by ID",
+        "description": "Retrieve a single profession by its ID",
+        "tags": [
+          "Professions"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionResponseSchema:Profession retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/professions/create": {
+      "post": {
+        "operationId": "post-professions-create",
+        "summary": "Create profession",
+        "description": "Create a new profession",
+        "tags": [
+          "Professions"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProfessionRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionResponseSchema:Profession created successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/professions/list": {
+      "get": {
+        "operationId": "get-professions-list",
+        "summary": "Get professions list",
+        "description": "Retrieve paginated list of professions with optional search filter",
+        "tags": [
+          "Professions"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionsListResponseSchema:Professions retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/professions/{id}/delete": {
+      "delete": {
+        "operationId": "delete-professions-{id}-delete",
+        "summary": "Delete profession",
+        "description": "Delete a profession by its ID",
+        "tags": [
+          "Professions"
+        ],
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/No content"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/professions/{id}/update": {
+      "put": {
+        "operationId": "put-professions-{id}-update",
+        "summary": "Update profession",
+        "description": "Update an existing profession",
+        "tags": [
+          "Professions"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfessionRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionResponseSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/services/offers/create": {
       "post": {
         "operationId": "post-services-offers-create",
@@ -4217,7 +5506,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOfferResponseSchema:Service offer created successfully"
+                  "$ref": "#/components/schemas/ServiceOfferResponseSchema"
                 }
               }
             }
@@ -4261,7 +5550,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServicePostingResponseSchema:Service posting created successfully"
+                  "$ref": "#/components/schemas/ServicePostingResponseSchema"
                 }
               }
             }
@@ -4296,13 +5585,604 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServicePostingsListResponseSchema:Service postings retrieved successfully"
+                  "$ref": "#/components/schemas/ServicePostingsListResponseSchema"
                 }
               }
             }
           },
           "400": {
             "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/professional-services/{id}": {
+      "get": {
+        "operationId": "get-services-professional-services-{id}",
+        "summary": "Get professional service by ID",
+        "description": "Retrieve a single professional service by ID",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionalServiceResponseSchema:Service retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/professional-services/list": {
+      "get": {
+        "operationId": "get-services-professional-services-list",
+        "summary": "Get professional services list",
+        "description": "Retrieve paginated list of professional services with optional filters",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionalServicesListResponseSchema:Services retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/professional-services/request": {
+      "post": {
+        "operationId": "post-services-professional-services-request",
+        "summary": "Request professional service directly",
+        "description": "Create a service transaction directly from a professional service",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestProfessionalServiceSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction created successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/reviews/create": {
+      "post": {
+        "operationId": "post-services-reviews-create",
+        "summary": "Create review",
+        "description": "Create a new review for a service transaction",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponseSchema:Review created successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/reviews/list": {
+      "get": {
+        "operationId": "get-services-reviews-list",
+        "summary": "Get reviews list",
+        "description": "Retrieve paginated list of reviews with optional filters",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewsListResponseSchema:Reviews retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/transactions/{id}": {
+      "get": {
+        "operationId": "get-services-transactions-{id}",
+        "summary": "Get service transaction by ID",
+        "description": "Retrieve a single service transaction by its ID. Users can only see their own transactions.",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponseSchema:Transaction retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/transactions/list": {
+      "get": {
+        "operationId": "get-services-transactions-list",
+        "summary": "Get service transactions list",
+        "description": "Retrieve paginated list of service transactions with optional filters. Users can only see their own transactions.",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionsListResponseSchema:Transactions retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/offers/{id}/accept": {
+      "post": {
+        "operationId": "post-services-offers-{id}-accept",
+        "summary": "Accept offer and create transaction",
+        "description": "Accept a service offer and create a service transaction",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptOfferRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction created successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/offers/{id}/reject": {
+      "post": {
+        "operationId": "post-services-offers-{id}-reject",
+        "summary": "Reject offer",
+        "description": "Reject a service offer",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Offer rejected successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/reviews/{id}/update": {
+      "put": {
+        "operationId": "put-services-reviews-{id}-update",
+        "summary": "Update review",
+        "description": "Update an existing review",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReviewRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponseSchema:Review updated successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/transactions/{id}/complete": {
+      "post": {
+        "operationId": "post-services-transactions-{id}-complete",
+        "summary": "Complete transaction",
+        "description": "Mark a service transaction as completed and process payment",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteTransactionSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction completed successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/services/transactions/{id}/update-status": {
+      "put": {
+        "operationId": "put-services-transactions-{id}-update-status",
+        "summary": "Update transaction status",
+        "description": "Update the status of a service transaction",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTransactionStatusSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction updated successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/user/send-otp": {
+      "post": {
+        "operationId": "post-user-send-otp",
+        "summary": "Send OTP to phone number",
+        "description": "Generate and send OTP code to user's phone number",
+        "tags": [
+          "User"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OTPSendRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OTPSendResponseSchema:OTP sent successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invalid phone number"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/user/verify-id": {
+      "post": {
+        "operationId": "post-user-verify-id",
+        "summary": "Verify user identity",
+        "description": "Verify user identity with cedula and facial recognition",
+        "tags": [
+          "User"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IDVerificationRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IDVerificationResponseSchema:Identity verified successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invalid cedula or images"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/user/verify-otp": {
+      "post": {
+        "operationId": "post-user-verify-otp",
+        "summary": "Verify OTP code",
+        "description": "Verify OTP code sent to phone number",
+        "tags": [
+          "User"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OTPVerifyRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OTPVerifyResponseSchema:OTP verified successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invalid OTP code"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -4418,6 +6298,199 @@
           },
           "403": {
             "$ref": "#/components/responses/403"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/withdrawals/{id}": {
+      "get": {
+        "operationId": "get-withdrawals-{id}",
+        "summary": "Get withdrawal by ID",
+        "description": "Retrieve a specific withdrawal's details by ID",
+        "tags": [
+          "Withdrawals"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawalSchema:Withdrawal retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Withdrawal not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/withdrawals/create": {
+      "post": {
+        "operationId": "post-withdrawals-create",
+        "summary": "Create withdrawal",
+        "description": "Create a new withdrawal request",
+        "tags": [
+          "Withdrawals"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWithdrawalRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawalSchema:Withdrawal created successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/withdrawals/list": {
+      "get": {
+        "operationId": "get-withdrawals-list",
+        "summary": "Get withdrawals list",
+        "description": "Retrieve paginated list of withdrawals with optional filters",
+        "tags": [
+          "Withdrawals"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawalsListResponseSchema:Withdrawals retrieved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/withdrawals/{id}/delete": {
+      "delete": {
+        "operationId": "delete-withdrawals-{id}-delete",
+        "summary": "Delete withdrawal",
+        "description": "Delete a withdrawal by ID",
+        "tags": [
+          "Withdrawals"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success response:Withdrawal deleted successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Withdrawal not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/withdrawals/{id}/update": {
+      "put": {
+        "operationId": "put-withdrawals-{id}-update",
+        "summary": "Update withdrawal",
+        "description": "Update withdrawal status and admin notes",
+        "tags": [
+          "Withdrawals"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWithdrawalStatusRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawalSchema:Withdrawal updated successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Withdrawal not found"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/500"

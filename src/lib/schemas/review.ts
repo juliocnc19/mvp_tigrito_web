@@ -14,6 +14,7 @@ export const ReviewSchema = z.object({
 
 // Create Review Request
 export const CreateReviewRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   transactionId: z.string(),
   reviewedId: z.string(),
   rating: z.number().min(1).max(5),
@@ -23,6 +24,7 @@ export const CreateReviewRequestSchema = z.object({
 
 // Update Review Request
 export const UpdateReviewRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   rating: z.number().min(1).max(5).optional(),
   comment: z.string().optional(),
 });

@@ -7,18 +7,13 @@ import { updateUserProfile, getUserById } from '@/lib/db/queries/user';
 
 export async function PUT(request: NextRequest) {
   try {
-    // Authenticate user (optional for testing)
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
-
     // Validate request body
     const validation = await validateRequest(request, UpdateUserProfileRequestSchema);
     if (!validation.success) {
       return NextResponse.json(validation.error, { status: 400 });
     }
 
-    const { name, phone, locationLat, locationLng, locationAddress } = validation.data;
+    const { userId, name, phone, locationLat, locationLng, locationAddress } = validation.data;
 
     // Update user profile
     const updatedUser = await updateUserProfile(userId, {

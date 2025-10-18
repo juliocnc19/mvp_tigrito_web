@@ -17,10 +17,19 @@ import { getServiceTransactionById } from '@/lib/db/queries/transaction';
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
-    const role = auth.user?.role;
+    // Get userId and role from query parameters
+    const userId = request.nextUrl.searchParams.get('userId');
+    const role = request.nextUrl.searchParams.get('role');
+    
+    if (!userId) {
+      return NextResponse.json(
+        createErrorResponse(
+          COMMON_ERROR_CODES.VALIDATION_ERROR,
+          'userId query parameter is required'
+        ),
+        { status: 400 }
+      );
+    }
     
     const { id } = await params;
 

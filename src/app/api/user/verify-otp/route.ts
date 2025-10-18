@@ -20,13 +20,6 @@ export async function POST(request: NextRequest) {
   console.log('📱 [API verify-otp] Starting OTP verification request');
 
   try {
-    // Get authenticated user (optional for testing)
-    console.log('📱 [API verify-otp] Checking authentication...');
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const user = auth.user;
-    console.log('📱 [API verify-otp] User authenticated:', user?.userId || 'No user');
-
     // Validate request body
     console.log('📱 [API verify-otp] Validating request body...');
     const validation = await validateRequest(request, OTPVerifyRequestSchema);
@@ -35,11 +28,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(validation.error, { status: 400 });
     }
 
-    const { phoneNumber, otpCode } = validation.data;
+    const { userId, phoneNumber, otpCode } = validation.data;
     console.log('📱 [API verify-otp] Request data:', {
       phoneNumber: phoneNumber ? 'Present' : 'Empty',
       otpCode: otpCode ? 'Present' : 'Empty',
-      userId: user?.userId || 'No user'
+      userId: userId || 'No user'
     });
 
     // Verify OTP with Twilio
@@ -81,7 +74,7 @@ export async function POST(request: NextRequest) {
     console.log('📱 [API verify-otp] OTP verified successfully, updating user...');
     try {
       await prisma.user.update({
-        where: { id: user?.userId || '' },
+        where: { id: userId || '' },
         data: {
           phone: phoneNumber,
           isVerified: true,

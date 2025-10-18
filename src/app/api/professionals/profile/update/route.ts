@@ -17,18 +17,13 @@ import { updateProfessionalProfile, getProfessionalByUserId } from '@/lib/db/que
  */
 export async function PUT(request: NextRequest) {
   try {
-    // Authenticate user (optional for testing)
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
-
     // Validate request body
     const validation = await validateRequest(request, UpdateProfessionalProfileRequestSchema);
     if (!validation.success) {
       return NextResponse.json(validation.error, { status: 400 });
     }
 
-    const { bio, yearsOfExperience, certifications, specialties, hourlyRate, bankAccount } = validation.data;
+    const { userId, bio, yearsOfExperience, certifications, specialties, hourlyRate, bankAccount } = validation.data;
 
     // Get current professional profile
     const currentProfile = await getProfessionalByUserId(userId);

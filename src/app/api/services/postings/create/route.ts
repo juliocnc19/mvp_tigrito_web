@@ -16,11 +16,6 @@ import { createServicePosting, getServicePostingById } from '@/lib/db/queries/se
  */
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate user (optional for testing)
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
-
     // Validate request body
     const validation = await validateRequest(request, CreateServicePostingRequestSchema);
     if (!validation.success) {
@@ -28,6 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     const {
+      userId,
       title,
       description,
       category,
@@ -40,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Create service posting
     const posting = await createServicePosting({
-      clientId: userId || 'anonymous',
+      clientId: userId,
       title,
       description,
       category,

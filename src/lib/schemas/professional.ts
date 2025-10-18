@@ -24,6 +24,8 @@ export const ProfessionalProfileSchema = z.object({
 
 // Create Professional Profile Request
 export const CreateProfessionalProfileRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
+  role: z.string().optional(),
   bio: z.string().max(1000).optional(),
   yearsOfExperience: z.number().min(0).max(70).optional(),
   certifications: z.string().optional(),
@@ -35,6 +37,7 @@ export const CreateProfessionalProfileRequestSchema = z.object({
 
 // Update Professional Profile Request
 export const UpdateProfessionalProfileRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   bio: z.string().max(1000).optional(),
   yearsOfExperience: z.number().min(0).max(70).optional(),
   certifications: z.string().optional(),

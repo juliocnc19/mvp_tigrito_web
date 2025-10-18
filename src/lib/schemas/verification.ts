@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 // ID Verification Request Schema
 export const IDVerificationRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   cedula: z.string()
     .regex(/^\d{7,8}$/, 'Cédula must be 7-8 digits')
     .min(7, 'Cédula is required'),

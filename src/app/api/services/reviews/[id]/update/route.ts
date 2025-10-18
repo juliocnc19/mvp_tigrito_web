@@ -19,11 +19,14 @@ import { updateReview, getReviewById } from '@/lib/db/queries/review';
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
-
     const { id } = await params;
+
+    const validation = await validateRequest(request, UpdateReviewRequestSchema);
+    if (!validation.success) {
+      return NextResponse.json(validation.error, { status: 400 });
+    }
+
+    const { userId, rating, comment } = validation.data;
 
     const existingReview = await getReviewById(id);
     if (!existingReview) {
@@ -38,16 +41,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         createErrorResponse(COMMON_ERROR_CODES.FORBIDDEN, 'You are not the author of this review'),
         { status: 403 }
       );
-    }
+    } 
 
-    const validation = await validateRequest(request, UpdateReviewRequestSchema);
-    if (!validation.success) {
-      return NextResponse.json(validation.error, { status: 400 });
-    }
-
-    const { rating, comment } = validation.data;
-
-    const review = await updateReview(id, { rating, comment });
+    const review = await updateReview(id, { userId, rating, comment });
 
     const responseData = { review };
     const responseValidation = ReviewResponseSchema.safeParse(responseData);

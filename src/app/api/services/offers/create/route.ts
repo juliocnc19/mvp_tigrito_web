@@ -16,11 +16,6 @@ import { createServiceOffer, getServiceOfferById } from '@/lib/db/queries/servic
  */
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate user (optional for testing)
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
-
     // Validate request body
     const validation = await validateRequest(request, CreateServiceOfferRequestSchema);
     if (!validation.success) {
@@ -28,6 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     const {
+      userId,
       postingId,
       proposedPrice,
       description,

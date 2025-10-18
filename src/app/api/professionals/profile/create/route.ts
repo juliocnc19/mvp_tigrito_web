@@ -18,14 +18,16 @@ import { createProfessionalProfile, getProfessionalByUserId } from '@/lib/db/que
  */
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate user (optional for testing)
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
-    const role = auth.user?.role;
+    // Validate request body
+    const validation = await validateRequest(request, CreateProfessionalProfileRequestSchema);
+    if (!validation.success) {
+      return NextResponse.json(validation.error, { status: 400 });
+    }
+
+    const { userId, role, bio, yearsOfExperience, certifications, specialties, hourlyRate, bankAccount, taxId } = validation.data;
 
     // Check if user is CLIENT or PROFESSIONAL
-    if (role !== 'CLIENT' && role !== 'PROFESSIONAL') {
+    if (role && role !== 'CLIENT' && role !== 'PROFESSIONAL') {
       return NextResponse.json(
         createErrorResponse(
           COMMON_ERROR_CODES.FORBIDDEN,
@@ -34,14 +36,6 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
-
-    // Validate request body
-    const validation = await validateRequest(request, CreateProfessionalProfileRequestSchema);
-    if (!validation.success) {
-      return NextResponse.json(validation.error, { status: 400 });
-    }
-
-    const { bio, yearsOfExperience, certifications, specialties, hourlyRate, bankAccount, taxId } = validation.data;
 
     // Check if professional profile already exists
     const existingProfile = await getProfessionalByUserId(userId);

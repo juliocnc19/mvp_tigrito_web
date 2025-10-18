@@ -20,16 +20,12 @@ import { getServiceTransactionById } from '@/lib/db/queries/transaction';
  */
 export async function POST(request: NextRequest) {
   try {
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
-
     const validation = await validateRequest(request, CreateReviewRequestSchema);
     if (!validation.success) {
       return NextResponse.json(validation.error, { status: 400 });
     }
 
-    const { transactionId, reviewedId, rating, comment, isProReview } = validation.data;
+    const { userId, transactionId, reviewedId, rating, comment, isProReview } = validation.data;
 
     const transaction = await getServiceTransactionById(transactionId);
 
@@ -56,7 +52,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const review = await createReview(userId, { transactionId, reviewedId, rating, comment, isProReview });
+    const review = await createReview(userId, { userId, transactionId, reviewedId, rating, comment, isProReview });
 
     const responseData = { review };
     const responseValidation = ReviewResponseSchema.safeParse(responseData);

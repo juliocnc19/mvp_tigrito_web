@@ -20,6 +20,7 @@ export const ServicePostingSchema = z.object({
 
 // Create Service Posting Request
 export const CreateServicePostingRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   title: z.string().min(5).max(200),
   description: z.string().min(10).max(5000),
   category: z.string(),
@@ -57,6 +58,7 @@ export const ServiceOfferSchema = z.object({
 
 // Create Service Offer Request
 export const CreateServiceOfferRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   postingId: z.string(),
   proposedPrice: z.number().min(0),
   description: z.string().min(10).max(2000),

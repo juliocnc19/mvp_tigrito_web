@@ -9,6 +9,7 @@ export const OTPSendRequestSchema = z.object({
 
 // OTP Verify Request Schema
 export const OTPVerifyRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   phoneNumber: z.string()
     .regex(/^04\d{9}$/, 'Phone must be in format 04120386216')
     .min(8, 'Phone is required'),

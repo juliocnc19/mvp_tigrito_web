@@ -15,10 +15,18 @@ import { getProfessionalByUserId } from '@/lib/db/queries/professional';
  */
 export async function GET(request: NextRequest) {
   try {
-    // Authenticate user (optional for testing)
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const userId = auth.user?.userId;
+    // Get userId from query parameters
+    const userId = request.nextUrl.searchParams.get('userId');
+    
+    if (!userId) {
+      return NextResponse.json(
+        createErrorResponse(
+          COMMON_ERROR_CODES.VALIDATION_ERROR,
+          'userId query parameter is required'
+        ),
+        { status: 400 }
+      );
+    }
 
     // Get professional profile by user ID
     const professional = await getProfessionalByUserId(userId);

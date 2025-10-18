@@ -22,6 +22,7 @@ export const UserSchema = z.object({
 
 // Update User Profile Request
 export const UpdateUserProfileRequestSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
   name: z.string().min(2).optional(),
   phone: z.string().min(10).optional(),
   locationLat: z.number().optional(),

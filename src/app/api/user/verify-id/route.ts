@@ -17,18 +17,13 @@ import { optionalAuth } from '@/lib/auth/middleware';
  */
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user (optional for testing)
-    const auth = optionalAuth(request);
-    // Note: Authentication is optional for testing purposes
-    const user = auth.user;
-
     // Validate request body
     const validation = await validateRequest(request, IDVerificationRequestSchema);
     if (!validation.success) {
       return NextResponse.json(validation.error, { status: 400 });
     }
 
-    const { cedula, cedulaImage, faceScanData } = validation.data;
+    const { userId, cedula, cedulaImage, faceScanData } = validation.data;
 
     // Validate cedula format (7-8 digits)
     if (!/^\d{7,8}$/.test(cedula)) {
@@ -68,10 +63,10 @@ export async function POST(request: NextRequest) {
     // 3. Anti-fraud detection
 
     // For now, simulate successful verification
-    const verificationId = `verify_${user?.userId || 'anonymous'}_${Date.now()}`;
+    const verificationId = `verify_${userId || 'anonymous'}_${Date.now()}`;
     
     // TODO: Save verification data to database
-    console.log(`[ID Verification] Verified user ${user?.userId || 'anonymous'} with cedula ${cedula}`);
+    console.log(`[ID Verification] Verified user ${userId || 'anonymous'} with cedula ${cedula}`);
 
     // Prepare response data
     const responseData = {

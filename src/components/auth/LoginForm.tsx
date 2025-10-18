@@ -47,8 +47,8 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
         if (result.user.role === 'ADMIN') {
           window.location.href = '/admin';
         } else {
-          // Default to client authenticated pages for CLIENT and other roles
-          window.location.href = '/(authenticated)';
+          // Default to client dashboard for CLIENT and other roles
+          window.location.href = '/dashboard';
         }
       }
     } catch (err) {

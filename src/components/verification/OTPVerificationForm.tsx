@@ -48,8 +48,8 @@ export function OTPVerificationForm({
           otpCode: otpCode.trim(),
         });
 
-        // Redirect to authenticated area on success
-        window.location.href = '/(authenticated)';
+        // Redirect to dashboard on success
+        window.location.href = '/dashboard';
       }
     } catch (err) {
       // Error is handled by React Query

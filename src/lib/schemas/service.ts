@@ -90,18 +90,18 @@ export const ServiceTransactionSchema = z.object({
 
 // Get Service Postings Query Schema
 export const GetServicePostingsQuerySchema = z.object({
-  page: z.coerce.number().min(1).default(1).optional(),
-  limit: z.coerce.number().min(1).max(100).default(10).optional(),
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
   status: z.enum(['OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
   category: z.string().optional(),
   minBudget: z.coerce.number().min(0).optional(),
   maxBudget: z.coerce.number().min(0).optional(),
   search: z.string().optional(),
-  locationLat: z.coerce.number().optional(),
-  locationLng: z.coerce.number().optional(),
-  radius: z.coerce.number().min(0).default(10).optional(),
+  locationLat: z.coerce.number(),
+  locationLng: z.coerce.number(),
+  radius: z.coerce.number().min(0).default(10),
   sortBy: z.enum(['budget', 'recent', 'deadline']).optional(),
-  sortDirection: z.enum(['asc', 'desc']).default('desc').optional(),
+  sortDirection: z.enum(['asc', 'desc']).default('desc'),
 });
 
 // Get Service Offers Query Schema

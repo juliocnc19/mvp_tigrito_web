@@ -72,15 +72,15 @@ export async function POST(request: NextRequest) {
     );
 
   } catch (error) {
-    console.error('📱 [API send-otp] Unexpected error:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
+    console.error('Send OTP error:', error);
+    let errorMessage = 'Failed to send OTP';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
     return NextResponse.json(
       createErrorResponse(
         COMMON_ERROR_CODES.INTERNAL_ERROR,
-        'Failed to send OTP'
+        errorMessage
       ),
       { status: 500 }
     );

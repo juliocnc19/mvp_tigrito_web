@@ -4,6 +4,7 @@ import { RoleSchema } from './common';
 // Register Request Schema
 export const RegisterRequestSchema = z.object({
   email: z.string().email(),
+  phone: z.string().optional(),
   password: z.string().min(8),
   name: z.string().min(2),
   role: RoleSchema.default('CLIENT'),

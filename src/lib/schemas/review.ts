@@ -36,3 +36,14 @@ export const GetReviewsQuerySchema = z.object({
   transactionId: z.string().optional(),
   isProReview: z.coerce.boolean().optional(),
 });
+
+// Review Response
+export const ReviewResponseSchema = z.object({
+  review: ReviewSchema,
+});
+
+// Reviews List Response
+export const ReviewsListResponseSchema = z.object({
+  reviews: z.array(ReviewSchema),
+  total: z.number(),
+});

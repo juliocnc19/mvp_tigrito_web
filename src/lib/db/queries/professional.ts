@@ -144,23 +144,32 @@ export async function getProfessionals(query: z.infer<typeof GetProfessionalsQue
   }
 
   // Search filter
+  const userWhere: Prisma.UserWhereInput = {};
   if (search) {
-    where.user = {
-      OR: [
-        { name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
-      ],
-    };
+    userWhere.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+      { email: { contains: search, mode: 'insensitive' } },
+    ];
   }
 
-  // Location filter (commented out due to type issues)
-  // if (locationLat && locationLng && radius) {
-  //   where.user = {
-  //     ...where.user,
-  //     locationLat: { gte: locationLat - (radius / 111), lte: locationLat + (radius / 111) },
-  //     locationLng: { gte: locationLng - (radius / 111), lte: locationLng + (radius / 111) },
-  //   };
-  // }
+  // Location filter
+  if (locationLat && locationLng && radius) {
+    const latOffset = radius / 111.0;
+    const lngOffset = radius / (111.0 * Math.cos(locationLat * Math.PI / 180.0));
+    
+    userWhere.locationLat = { 
+      gte: locationLat - latOffset,
+      lte: locationLat + latOffset,
+    };
+    userWhere.locationLng = {
+      gte: locationLng - lngOffset,
+      lte: locationLng + lngOffset,
+    };
+  }
+  
+  if (Object.keys(userWhere).length > 0) {
+    where.user = userWhere;
+  }
 
   // Sort
   let orderBy: any = { createdAt: 'desc' };
@@ -174,35 +183,87 @@ export async function getProfessionals(query: z.infer<typeof GetProfessionalsQue
     orderBy = { createdAt: sortDirection };
   }
 
-  const [professionals, total] = await Promise.all([
-    prisma.professionalProfile.findMany({
-      where,
-      skip: (page - 1) * limit,
-      take: limit,
-      orderBy,
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            phone: true,
-            name: true,
-            role: true,
-            isVerified: true,
-            createdAt: true,
-            locationLat: true,
-            locationLng: true,
-            locationAddress: true,
-          },
+  const professionals = await prisma.professionalProfile.findMany({
+    where,
+    skip: (page - 1) * limit,
+    take: limit,
+    orderBy: sortBy === 'quality' ? undefined : orderBy,
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          name: true,
+          role: true,
+          isVerified: true,
+          createdAt: true,
+          locationLat: true,
+          locationLng: true,
+          locationAddress: true,
         },
-        reviews: true,
       },
-    }),
-    prisma.professionalProfile.count({ where }),
-  ]);
+      reviews: true,
+    },
+  });
+  
+  const total = await prisma.professionalProfile.count({ where });
+  
+  if (sortBy === 'quality' && locationLat && locationLng) {
+    professionals.sort((a, b) => {
+      const scoreA = calculateQualityScore(a, locationLat, locationLng);
+      const scoreB = calculateQualityScore(b, locationLat, locationLng);
+      return sortDirection === 'desc' ? scoreB - scoreA : scoreA - scoreB;
+    });
+  }
 
   return { professionals, total };
 }
+
+function calculateQualityScore(professional: any, clientLat: number, clientLng: number): number {
+  const { ratingAvg, yearsOfExperience, user } = professional;
+  
+  const rating = ratingAvg ?? 0;
+  const experience = yearsOfExperience ?? 0;
+  
+  let distance = Infinity;
+  if (user?.locationLat && user?.locationLng) {
+    distance = getDistance(clientLat, clientLng, user.locationLat, user.locationLng);
+  }
+
+  // Weights can be adjusted
+  const ratingWeight = 0.5;
+  const experienceWeight = 0.2;
+  const distanceWeight = 0.3;
+
+  // Normalize distance: closer is better. Assuming max distance of 100km for normalization.
+  const normalizedDistance = Math.max(0, 1 - (distance / 100));
+
+  // Rating is 0-5, experience can be anything, so we can cap it or normalize it.
+  // For simplicity, let's use them directly but this can be improved.
+  const score = (rating * ratingWeight) + (experience * experienceWeight) + (normalizedDistance * distanceWeight);
+  
+  return score;
+}
+
+function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2-lat1);
+  const dLon = deg2rad(lon2-lon1); 
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  const d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg: number) {
+  return deg * (Math.PI/180)
+}
+
 
 // Get top-rated professionals
 export async function getTopRatedProfessionals(limit: number = 10): Promise<any[]> {

@@ -56,7 +56,7 @@ export const GetProfessionalsQuerySchema = z.object({
   locationLat: z.coerce.number().optional(),
   locationLng: z.coerce.number().optional(),
   radius: z.coerce.number().min(0).default(10),
-  sortBy: z.enum(['rating', 'experience', 'hourlyRate', 'recent']).optional(),
+  sortBy: z.enum(['rating', 'experience', 'hourlyRate', 'recent', 'quality']).optional(),
   sortDirection: z.enum(['asc', 'desc']).default('desc'),
 });
 

@@ -29,3 +29,14 @@ export const GetProfessionsQuerySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(10),
   search: z.string().optional(),
 });
+
+// Profession Response
+export const ProfessionResponseSchema = z.object({
+  profession: ProfessionSchema,
+});
+
+// Professions List Response
+export const ProfessionsListResponseSchema = z.object({
+  professions: z.array(ProfessionSchema),
+  total: z.number(),
+});

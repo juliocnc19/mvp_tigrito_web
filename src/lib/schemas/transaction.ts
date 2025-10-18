@@ -45,3 +45,14 @@ export const GetTransactionsQuerySchema = z.object({
   dateFrom: z.string().datetime().optional(),
   dateTo: z.string().datetime().optional(),
 });
+
+// Transaction Response
+export const TransactionResponseSchema = z.object({
+  transaction: ServiceTransactionSchema,
+});
+
+// Transactions List Response
+export const TransactionsListResponseSchema = z.object({
+  transactions: z.array(ServiceTransactionSchema),
+  total: z.number(),
+});

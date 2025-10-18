@@ -31,15 +31,14 @@ export async function POST(request: NextRequest) {
     }
     authLogger.info('REGISTER_VALIDATION_SUCCESS', { requestId });
 
-    const { email, phone, password, name, role } = validation.data;
+    const { email, password, name, role } = validation.data;
 
-    authLogger.registerAttempt(email, phone);
+    authLogger.registerAttempt(email);
 
     // Additional validation
-    authLogger.info('REGISTER_BUSINESS_VALIDATION_START', { requestId, email, phone });
+    authLogger.info('REGISTER_BUSINESS_VALIDATION_START', { requestId, email });
     const registrationValidation = validateUserRegistration({
       email,
-      phone,
       password,
       name,
       role,
@@ -56,14 +55,14 @@ export async function POST(request: NextRequest) {
         { status: 422 }
       );
     }
-    authLogger.info('REGISTER_BUSINESS_VALIDATION_SUCCESS', { requestId, email, phone });
+    authLogger.info('REGISTER_BUSINESS_VALIDATION_SUCCESS', { requestId, email });
 
     // Check if email already exists
     if (email) {
       authLogger.info('REGISTER_EMAIL_CHECK_START', { requestId, email });
       const emailTaken = await emailExists(email);
       if (emailTaken) {
-        authLogger.registerFailed(email, phone, 'EMAIL_ALREADY_EXISTS');
+        authLogger.registerFailed(email, 'EMAIL_ALREADY_EXISTS');
         authLogger.securityEvent('REGISTER_DUPLICATE_EMAIL', { email }, requestId);
         return NextResponse.json(
           createErrorResponse(
@@ -76,34 +75,15 @@ export async function POST(request: NextRequest) {
       authLogger.info('REGISTER_EMAIL_CHECK_SUCCESS', { requestId, email, available: true });
     }
 
-    // Check if phone already exists
-    if (phone) {
-      authLogger.info('REGISTER_PHONE_CHECK_START', { requestId, phone });
-      const phoneTaken = await phoneExists(phone);
-      if (phoneTaken) {
-        authLogger.registerFailed(email, phone, 'PHONE_ALREADY_EXISTS');
-        authLogger.securityEvent('REGISTER_DUPLICATE_PHONE', { phone }, requestId);
-        return NextResponse.json(
-          createErrorResponse(
-            COMMON_ERROR_CODES.CONFLICT,
-            'Phone number already exists'
-          ),
-          { status: 409 }
-        );
-      }
-      authLogger.info('REGISTER_PHONE_CHECK_SUCCESS', { requestId, phone, available: true });
-    }
-
     // Hash password
     authLogger.info('REGISTER_PASSWORD_HASH_START', { requestId });
     const hashedPassword = await hashPassword(password);
     authLogger.info('REGISTER_PASSWORD_HASH_SUCCESS', { requestId });
 
     // Create user
-    authLogger.info('REGISTER_USER_CREATION_START', { requestId, email, phone, role });
+    authLogger.info('REGISTER_USER_CREATION_START', { requestId, email, role });
     const user = await createUser({
       email,
-      phone,
       password: hashedPassword,
       name,
       role,
@@ -111,7 +91,7 @@ export async function POST(request: NextRequest) {
       isIDVerified: false,
     });
 
-    authLogger.dbOperation('USER_CREATION', true, user.id, { email, phone, role });
+    authLogger.dbOperation('USER_CREATION', true, user.id, { email, role });
     authLogger.info('REGISTER_USER_CREATION_SUCCESS', { requestId, userId: user.id, role });
 
     // Generate tokens
@@ -120,14 +100,12 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       role: user.role,
       email: user.email || undefined,
-      phone: user.phone || undefined,
     });
 
     const refreshToken = generateRefreshToken({
       userId: user.id,
       role: user.role,
       email: user.email || undefined,
-      phone: user.phone || undefined,
     });
 
     authLogger.tokenGenerated(user.id, 'access');
@@ -139,7 +117,6 @@ export async function POST(request: NextRequest) {
     const userData = {
       id: user.id,
       email: user.email ?? null,
-      phone: user.phone ?? null,
       name: user.name ?? null,
       role: user.role,
       isVerified: user.isVerified,

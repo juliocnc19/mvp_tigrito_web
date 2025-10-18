@@ -29,6 +29,7 @@ export function useLogin() {
       }
 
       const data = await response.json();
+      console.log('🔐 [useLogin] Response data:', data);
       return data.data;
     },
     onSuccess: (data) => {

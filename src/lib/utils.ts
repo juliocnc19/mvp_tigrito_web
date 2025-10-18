@@ -107,7 +107,7 @@ export const authLogger = {
   },
 
   validationFailed: (operation: string, errors: any[], userId?: string) => {
-    authLogger.warn('VALIDATION_FAILED', `Validation errors: ${errors.length}`, { errors }, userId);
+    authLogger.warn('VALIDATION_FAILED', `Validation errors: ${errors.length}`, JSON.stringify(errors) || '', userId);
   },
 
   dbOperation: (operation: string, success: boolean, userId?: string, data?: any) => {

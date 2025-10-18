@@ -51,7 +51,7 @@ export const EmailVerificationRequestSchema = z.object({
 export const UserSchema = z.object({
   id: z.string(),
   email: z.string().email().nullable(),
-  phone: z.string().nullable(),
+  phone: z.string().optional(),
   name: z.string().nullable(),
   role: RoleSchema,
   isVerified: z.boolean(),

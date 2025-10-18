@@ -98,12 +98,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return paginationResponse(
-      postingsData,
-      total,
-      page,
-      limit,
-      'Service postings retrieved successfully'
+    return NextResponse.json(
+      paginationResponse(
+        postingsData,
+        total,
+        page,
+        limit,
+        'Service postings retrieved successfully'
+      )
     );
 
   } catch (error) {

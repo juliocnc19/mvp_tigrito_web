@@ -6,7 +6,7 @@ import { getUserStats } from '@/lib/db/queries/user';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authenticate user
@@ -15,7 +15,7 @@ export async function GET(
       return auth.response;
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID
     if (!id || typeof id !== 'string') {

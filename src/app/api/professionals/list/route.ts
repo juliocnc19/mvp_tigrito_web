@@ -83,12 +83,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return paginationResponse(
-      professionals,
-      total,
-      page,
-      limit,
-      'Professionals retrieved successfully'
+    return NextResponse.json(
+      paginationResponse(
+        professionals,
+        total,
+        page,
+        limit,
+        'Professionals retrieved successfully'
+      )
     );
 
   } catch (error) {

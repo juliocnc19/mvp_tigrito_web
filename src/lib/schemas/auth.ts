@@ -3,15 +3,11 @@ import { RoleSchema } from './common';
 
 // Register Request Schema
 export const RegisterRequestSchema = z.object({
-  email: z.string().email().optional(),
-  phone: z.string().min(10).optional(),
+  email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(2),
   role: RoleSchema.default('CLIENT'),
-}).refine(
-  (data) => data.email || data.phone,
-  { message: "Either email or phone must be provided" }
-);
+});
 
 // Login Request Schema
 export const LoginRequestSchema = z.object({
@@ -26,6 +22,12 @@ export const LoginRequestSchema = z.object({
 // Refresh Token Request Schema
 export const RefreshTokenRequestSchema = z.object({
   token: z.string(),
+});
+
+// Google Auth Request Schema
+export const GoogleAuthRequestSchema = z.object({
+  token: z.string().min(1, 'Google token is required'),
+  idToken: z.string().optional(),
 });
 
 // Forgot Password Request Schema
@@ -67,6 +69,7 @@ export const UserSchema = z.object({
 export const AuthResponseSchema = z.object({
   user: UserSchema,
   token: z.string(),
+  refreshToken: z.string(),
 });
 
 export const RefreshTokenResponseSchema = z.object({

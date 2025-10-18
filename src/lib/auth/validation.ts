@@ -53,33 +53,17 @@ export function validateRole(role: string): { valid: boolean; error?: string } {
 
 // User registration validation
 export function validateUserRegistration(data: {
-  email?: string;
-  phone?: string;
+  email: string;
   password: string;
   name: string;
   role?: string;
 }): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
-  // Check that either email or phone is provided
-  if (!data.email && !data.phone) {
-    errors.push('Either email or phone must be provided');
-  }
-
-  // Validate email if provided
-  if (data.email) {
-    const emailValidation = validateEmail(data.email);
-    if (!emailValidation.valid) {
-      errors.push(emailValidation.error!);
-    }
-  }
-
-  // Validate phone if provided
-  if (data.phone) {
-    const phoneValidation = validatePhone(data.phone);
-    if (!phoneValidation.valid) {
-      errors.push(phoneValidation.error!);
-    }
+  // Validate email
+  const emailValidation = validateEmail(data.email);
+  if (!emailValidation.valid) {
+    errors.push(emailValidation.error!);
   }
 
   // Validate password

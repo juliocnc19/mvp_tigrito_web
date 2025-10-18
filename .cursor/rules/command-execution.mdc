@@ -1,8 +1,6 @@
 ---
 alwaysApply: true
-description: Command execution preference for terminal issues
 ---
-
 # Command Execution Guidelines
 
 ## Terminal Command Handling

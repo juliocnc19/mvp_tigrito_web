@@ -54,20 +54,20 @@ export async function GET(request: NextRequest) {
     // Prepare response data
     const usersData = users.map(user => ({
       id: user.id,
-      email: user.email,
-      phone: user.phone,
-      name: user.name,
+      email: user.email ?? null,
+      phone: user.phone ?? null,
+      name: user.name ?? null,
       role: user.role,
       isVerified: user.isVerified,
       isIDVerified: user.isIDVerified,
-      balance: user.balance,
+      balance: user.balance.toNumber(),
       isSuspended: user.isSuspended,
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
       deletedAt: user.deletedAt?.toISOString() || null,
-      locationLat: user.locationLat,
-      locationLng: user.locationLng,
-      locationAddress: user.locationAddress,
+      locationLat: user.locationLat ?? null,
+      locationLng: user.locationLng ?? null,
+      locationAddress: user.locationAddress ?? null,
     }));
 
     const responseData = {
@@ -87,12 +87,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return paginationResponse(
-      usersData,
-      total,
-      page,
-      limit,
-      'Users retrieved successfully'
+    return NextResponse.json(
+      paginationResponse(
+        usersData,
+        total,
+        page,
+        limit,
+        'Users retrieved successfully'
+      )
     );
 
   } catch (error) {

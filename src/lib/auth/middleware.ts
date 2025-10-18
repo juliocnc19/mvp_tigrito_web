@@ -5,7 +5,10 @@ import { createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 // Authentication middleware
 export function authenticateRequest(request: NextRequest): { success: true; user: JWTPayload } | { success: false; response: NextResponse } {
   const authHeader = request.headers.get('authorization');
+  console.log('🔐 [authenticateRequest] Auth header:', authHeader ? 'Present' : 'Not found');
+
   const token = extractTokenFromHeader(authHeader);
+  console.log('🔐 [authenticateRequest] Extracted token:', token ? 'Present' : 'Not found');
 
   if (!token) {
     return {

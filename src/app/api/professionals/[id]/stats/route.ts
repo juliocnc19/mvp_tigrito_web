@@ -14,13 +14,13 @@ import { getProfessionalStats } from '@/lib/db/queries/professional';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Optional authentication (public endpoint)
     const auth = optionalAuth(request);
 
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID
     if (!id || typeof id !== 'string') {

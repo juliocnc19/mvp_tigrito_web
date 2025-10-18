@@ -1,0 +1,114 @@
+task_assignments:
+  # FASE 1: Preparación y Configuración
+  - task_group: "FASE 1.1: Configuración del Proyecto"
+    tasks:
+      - T1.1.1 - Instalar componentes shadcn/ui requeridos
+      - T1.1.2 - Configurar variables de entorno
+      - T1.1.3 - Configurar NextAuth.js
+    assigned_subagent: "ui-designer"
+    reason: "Incluye instalación de componentes UI y configuración del stack frontend"
+
+  - task_group: "FASE 1.2: Actualización de Esquemas"
+    tasks:
+      - T1.2.1 - Actualizar esquemas de autenticación
+      - T1.2.2 - Crear esquemas de verificación
+      - T1.2.3 - Crear tipos TypeScript
+    assigned_subagent: "api-engineer"
+    reason: "Schemas y tipos son responsabilidad de API engineer para asegurar consistencia con endpoints"
+
+  # FASE 2: Backend - Endpoints y Lógica
+  - task_group: "FASE 2.1: Endpoints de Autenticación"
+    tasks:
+      - T2.1.1 - Actualizar endpoint de login
+      - T2.1.2 - Actualizar endpoint de registro
+      - T2.1.3 - Actualizar endpoint de recuperación
+      - T2.1.4 - Actualizar endpoint de reset
+    assigned_subagent: "api-engineer"
+    reason: "Implementación de endpoints de API es responsabilidad del API engineer"
+
+  - task_group: "FASE 2.2: Endpoints Nuevos"
+    tasks:
+      - T2.2.1 - Implementar Google OAuth
+      - T2.2.2 - Implementar verificación de ID
+      - T2.2.3 - Implementar envío de OTP
+      - T2.2.4 - Implementar verificación de OTP
+    assigned_subagent: "api-engineer"
+    reason: "Nuevos endpoints de API requieren API engineer"
+
+  - task_group: "FASE 2.3: Servicios de Apoyo Backend"
+    tasks:
+      - T2.3.1 - Crear servicio de OTP
+      - T2.3.2 - Crear servicio de Google Auth
+      - T2.3.3 - Crear servicio de upload
+    assigned_subagent: "api-engineer"
+    reason: "Servicios backend son responsabilidad del API engineer"
+
+  # FASE 3: Frontend - Componentes y Páginas
+  - task_group: "FASE 3.1: Componentes de Autenticación"
+    tasks:
+      - T3.1.1 - Crear LoginForm
+      - T3.1.2 - Crear RegisterForm
+      - T3.1.3 - Crear ForgotPasswordForm
+      - T3.1.4 - Crear GoogleAuthButton
+    assigned_subagent: "ui-designer"
+    reason: "Componentes de UI son responsabilidad del UI designer"
+
+  - task_group: "FASE 3.2: Componentes de Verificación"
+    tasks:
+      - T3.2.1 - Crear IDVerificationForm
+      - T3.2.2 - Crear PhoneVerificationForm
+      - T3.2.3 - Crear OTPVerificationForm
+    assigned_subagent: "ui-designer"
+    reason: "Componentes de UI son responsabilidad del UI designer"
+
+  - task_group: "FASE 3.3: Páginas de Autenticación"
+    tasks:
+      - T3.3.1 - Crear página Splash
+      - T3.3.2 - Crear página Login
+      - T3.3.3 - Crear página Register
+      - T3.3.4 - Crear página ForgotPassword
+      - T3.3.5 - Crear página ResetPassword
+    assigned_subagent: "ui-designer"
+    reason: "Páginas y vistas son responsabilidad del UI designer"
+
+  - task_group: "FASE 3.4: Páginas de Verificación"
+    tasks:
+      - T3.4.1 - Crear página Intro Verificación
+      - T3.4.2 - Crear página Verificar Cédula
+      - T3.4.3 - Crear página Registrar Teléfono
+      - T3.4.4 - Crear página Validar Teléfono
+    assigned_subagent: "ui-designer"
+    reason: "Páginas de verificación son responsabilidad del UI designer"
+
+  # FASE 4: Integración y Testing
+  - task_group: "FASE 4.1: Integración de Componentes"
+    tasks:
+      - T4.1.1 - Integrar formularios con APIs
+      - T4.1.2 - Implementar navegación
+      - T4.1.3 - Implementar manejo de estado
+    assigned_subagent: "ui-designer"
+    reason: "Integración frontend-backend incluye navegación y state management"
+
+  - task_group: "FASE 4.2: Validación y Manejo de Errores"
+    tasks:
+      - T4.2.1 - Implementar validación de formularios
+      - T4.2.2 - Implementar manejo de errores
+      - T4.2.3 - Implementar loading states
+    assigned_subagent: "ui-designer"
+    reason: "Validación de formularios y manejo de errores en frontend es responsabilidad del UI designer"
+
+  - task_group: "FASE 4.3: Testing"
+    tasks:
+      - T4.3.1 - Testing unitario de componentes
+      - T4.3.2 - Testing de integración
+      - T4.3.3 - Testing E2E
+    assigned_subagent: "testing-engineer"
+    reason: "Testing es responsabilidad del testing engineer"
+
+  - task_group: "FASE 4.4: Optimización y Refinamiento"
+    tasks:
+      - T4.4.1 - Optimizar rendimiento
+      - T4.4.2 - Mejorar accesibilidad
+      - T4.4.3 - Ajustar estilos y UX
+    assigned_subagent: "ui-designer"
+    reason: "Optimización de rendimiento y refinamiento de UI es responsabilidad del UI designer"

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RefreshTokenRequestSchema, RefreshTokenResponseSchema } from '@/lib/schemas/auth';
+import { RefreshTokenRequestSchema } from '@/lib/schemas/auth';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { refreshToken } from '@/lib/auth/jwt';
@@ -54,20 +54,8 @@ export async function POST(request: NextRequest) {
       token: refreshResult.accessToken,
     };
 
-    // Validate response
-    const responseValidation = RefreshTokenResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Token refreshed successfully')
+      createSuccessResponse(responseData, 'Token refreshed successfully')
     );
 
   } catch (error) {

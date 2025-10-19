@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LoginRequestSchema, AuthResponseSchema } from '@/lib/schemas/auth';
+import { LoginRequestSchema } from '@/lib/schemas/auth';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { authLogger } from '@/lib/utils';
@@ -315,32 +315,8 @@ export async function POST(request: NextRequest) {
       refreshToken,
     };
 
-    // Validate response
-    authLogger.info('LOGIN_RESPONSE_VALIDATION_START', {
-      requestId,
-      userId: user.id,
-      responseSize: JSON.stringify(responseData).length
-    }, user.id);
-
-    const responseValidation = AuthResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      authLogger.validationFailed('LOGIN_RESPONSE_VALIDATION', responseValidation.error.issues, user.id);
-      authLogger.error('LOGIN_RESPONSE_VALIDATION_FAILED', new Error('Response schema validation failed'), {
-        requestId,
-        userId: user.id,
-        validationErrors: responseValidation.error.issues
-      }, user.id);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     const responsePrepTime = Date.now() - responsePrepStart;
-    authLogger.info('LOGIN_RESPONSE_VALIDATION_SUCCESS', {
+    authLogger.info('LOGIN_RESPONSE_PREPARATION_SUCCESS', {
       requestId,
       userId: user.id,
       preparationTime: responsePrepTime
@@ -392,7 +368,7 @@ export async function POST(request: NextRequest) {
     }, user.id);
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Login successful')
+      createSuccessResponse(responseData, 'Login successful')
     );
 
   } catch (error) {

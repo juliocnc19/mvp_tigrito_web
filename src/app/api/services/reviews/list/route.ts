@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GetReviewsQuerySchema, ReviewsListResponseSchema } from '@/lib/schemas/review';
+import { GetReviewsQuerySchema } from '@/lib/schemas/review';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES, paginationResponse } from '@/lib/utils/response';
 import { getReviews } from '@/lib/db/queries/review';
 
@@ -37,20 +37,6 @@ export async function GET(request: NextRequest) {
       transactionId,
       isProReview,
     });
-
-    const responseData = { reviews, total };
-    const responseValidation = ReviewsListResponseSchema.safeParse(responseData);
-
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues,
-        ),
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
       paginationResponse(

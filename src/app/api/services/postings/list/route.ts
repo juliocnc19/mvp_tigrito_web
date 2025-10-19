@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GetServicePostingsQuerySchema, ServicePostingsListResponseSchema } from '@/lib/schemas/service';
+import { GetServicePostingsQuerySchema } from '@/lib/schemas/service';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES, paginationResponse } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { getServicePostings } from '@/lib/db/queries/service';
@@ -131,27 +131,6 @@ export async function GET(request: NextRequest) {
     });
 
     console.log('✅ [GET /api/services/postings/list] Response data prepared successfully');
-
-    const responseData = {
-      postings: postingsData,
-      total,
-    };
-
-    // Validate response
-    console.log('🔍 [GET /api/services/postings/list] Validating response schema...');
-    const responseValidation = ServicePostingsListResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      console.error('❌ [GET /api/services/postings/list] Response validation failed:', responseValidation.error.issues);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
-    console.log('✅ [GET /api/services/postings/list] Response validation successful');
 
     const response = NextResponse.json(
       paginationResponse(

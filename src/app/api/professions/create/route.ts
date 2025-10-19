@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreateProfessionRequestSchema, ProfessionResponseSchema } from '@/lib/schemas/profession';
+import { CreateProfessionRequestSchema } from '@/lib/schemas/profession';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
@@ -55,21 +55,9 @@ export async function POST(request: NextRequest) {
     const profession = await createProfession({ name, slug, description });
 
     const responseData = { profession };
-    const responseValidation = ProfessionResponseSchema.safeParse(responseData);
-
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues
-        ),
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Profession created successfully'),
+      createSuccessResponse(responseData, 'Profession created successfully'),
       { status: 201 }
     );
 

@@ -9,3 +9,6 @@ export { RequestCard } from './RequestCard';
 // Navigation Components
 export { TopNavigation } from './TopNavigation';
 export { SidebarNavigation } from './SidebarNavigation';
+
+// Admin Components
+export { CreateUserModal } from './admin/CreateUserModal';

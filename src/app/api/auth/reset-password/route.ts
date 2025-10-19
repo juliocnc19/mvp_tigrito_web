@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ResetPasswordRequestSchema, MessageResponseSchema } from '@/lib/schemas/auth';
+import { ResetPasswordRequestSchema } from '@/lib/schemas/auth';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { verifyPasswordResetToken, isTokenExpired, hashPassword } from '@/lib/auth/password';
@@ -90,20 +90,8 @@ export async function POST(request: NextRequest) {
       message: 'Password reset successfully',
     };
 
-    // Validate response
-    const responseValidation = MessageResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Password reset successful')
+      createSuccessResponse(responseData, 'Password reset successful')
     );
 
   } catch (error) {

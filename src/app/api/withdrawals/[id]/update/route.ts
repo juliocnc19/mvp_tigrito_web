@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { UpdateWithdrawalStatusRequestSchema, WithdrawalSchema } from '@/lib/schemas/withdrawal';
+import { UpdateWithdrawalStatusRequestSchema } from '@/lib/schemas/withdrawal';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { updateWithdrawal, getWithdrawalById } from '@/lib/db/queries/withdrawal';
@@ -77,20 +77,8 @@ export async function PUT(
       rejectionReason: withdrawal.rejectionReason,
     };
 
-    // Validate response
-    const responseValidation = WithdrawalSchema.safeParse(withdrawalData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Withdrawal updated successfully')
+      createSuccessResponse(withdrawalData, 'Withdrawal updated successfully')
     );
 
   } catch (error) {

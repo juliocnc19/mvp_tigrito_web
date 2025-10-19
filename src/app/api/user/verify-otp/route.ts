@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { OTPVerifyRequestSchema, OTPVerifyResponseSchema } from '@/lib/schemas/otp';
+import { OTPVerifyRequestSchema } from '@/lib/schemas/otp';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { verifyOTP, removeOTP } from '@/lib/services/otp';
@@ -103,23 +103,9 @@ export async function POST(request: NextRequest) {
       verified: true,
     };
 
-    // Validate response
-    console.log('📱 [API verify-otp] Validating response schema...');
-    const responseValidation = OTPVerifyResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      console.error('📱 [API verify-otp] Response validation failed:', responseValidation.error);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     console.log('📱 [API verify-otp] Returning success response');
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Phone number verified successfully')
+      createSuccessResponse(responseData, 'Phone number verified successfully')
     );
 
   } catch (error) {

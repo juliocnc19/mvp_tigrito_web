@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GetUsersQuerySchema, UsersListResponseSchema } from '@/lib/schemas/user';
+import { GetUsersQuerySchema } from '@/lib/schemas/user';
 import { validateQueryParams } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES, paginationResponse } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
@@ -66,23 +66,6 @@ export async function GET(request: NextRequest) {
       locationLng: user.locationLng ?? null,
       locationAddress: user.locationAddress ?? null,
     }));
-
-    const responseData = {
-      users: usersData,
-      total,
-    };
-
-    // Validate response
-    const responseValidation = UsersListResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
       paginationResponse(

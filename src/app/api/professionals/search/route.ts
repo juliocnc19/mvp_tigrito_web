@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ProfessionalsListResponseSchema } from '@/lib/schemas/professional';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { searchProfessionals } from '@/lib/db/queries/professional';
@@ -31,20 +30,8 @@ export async function GET(request: NextRequest) {
       total: professionals.length,
     };
 
-    // Validate response
-    const responseValidation = ProfessionalsListResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Professionals search results retrieved successfully')
+      createSuccessResponse(responseData, 'Professionals search results retrieved successfully')
     );
 
   } catch (error) {

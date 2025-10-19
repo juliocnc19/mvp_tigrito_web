@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreateProfessionalProfileRequestSchema, ProfessionalProfileResponseSchema } from '@/lib/schemas/professional';
+import { CreateProfessionalProfileRequestSchema } from '@/lib/schemas/professional';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
@@ -69,20 +69,8 @@ export async function POST(request: NextRequest) {
       professional: createdProfessional,
     };
 
-    // Validate response
-    const responseValidation = ProfessionalProfileResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Professional profile created successfully'),
+      createSuccessResponse(responseData, 'Professional profile created successfully'),
       { status: 201 }
     );
 

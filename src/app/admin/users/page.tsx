@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { DataTable, Column } from '@/components/admin/DataTable';
 import { EntityActions } from '@/components/admin/EntityActions';
+import { CreateUserModal } from '@/components/admin/CreateUserModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,14 +43,16 @@ export default function UsersManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
   });
   const [filters, setFilters] = useState({
-    role: '',
-    isVerified: '',
+    role: 'all',
+    isVerified: 'all',
     search: '',
   });
   const [sorting, setSorting] = useState({
@@ -67,8 +70,8 @@ export default function UsersManagementPage() {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
-        ...(filters.role && { role: filters.role }),
-        ...(filters.isVerified && { isVerified: filters.isVerified }),
+        ...(filters.role && filters.role !== 'all' && { role: filters.role }),
+        ...(filters.isVerified && filters.isVerified !== 'all' && { isVerified: filters.isVerified }),
         ...(filters.search && { search: filters.search }),
         ...(sorting.sortBy && { sortBy: sorting.sortBy }),
         ...(sorting.sortDirection && { sortDirection: sorting.sortDirection }),
@@ -79,8 +82,9 @@ export default function UsersManagementPage() {
         throw new Error('Failed to fetch users');
       }
       const data = await response.json();
-      setUsers(data.data.users);
-      setPagination(prev => ({ ...prev, total: data.data.total }));
+      console.log('API Response:', data); // Debug log
+      setUsers(data.data || []);
+      setPagination(prev => ({ ...prev, total: data.pagination?.total || 0 }));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading users');
     } finally {
@@ -124,22 +128,30 @@ export default function UsersManagementPage() {
   };
 
   const handleDeleteUser = async (user: User) => {
-    if (confirm(`¿Estás seguro de que quieres eliminar al usuario ${user.name || user.email}?`)) {
-      try {
-        const response = await fetch(`/api/users/${user.id}`, {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          fetchUsers(); // Refresh the list
-        }
-      } catch (err) {
-        console.error('Error deleting user:', err);
+    try {
+      setError(null);
+      const response = await fetch(`/api/users/${user.id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        setSuccessMessage(`Usuario ${user.name || user.email} eliminado exitosamente`);
+        fetchUsers(); // Refresh the list
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error?.message || 'Error al eliminar usuario');
       }
+    } catch (err) {
+      setError('Error de conexión al eliminar usuario');
+      console.error('Error deleting user:', err);
     }
   };
 
   const handleToggleVerification = async (user: User) => {
     try {
+      setError(null);
       const response = await fetch(`/api/users/${user.id}/verify`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -147,16 +159,24 @@ export default function UsersManagementPage() {
           isVerified: !user.isVerified,
         }),
       });
+      
       if (response.ok) {
+        setSuccessMessage(`Usuario ${user.name || user.email} ${!user.isVerified ? 'verificado' : 'desverificado'} exitosamente`);
         fetchUsers(); // Refresh the list
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error?.message || 'Error al actualizar verificación');
       }
     } catch (err) {
+      setError('Error de conexión al actualizar verificación');
       console.error('Error updating verification:', err);
     }
   };
 
   const handleToggleSuspension = async (user: User) => {
     try {
+      setError(null);
       const response = await fetch(`/api/users/${user.id}/suspend`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -164,12 +184,25 @@ export default function UsersManagementPage() {
           isSuspended: !user.isSuspended,
         }),
       });
+      
       if (response.ok) {
+        setSuccessMessage(`Usuario ${user.name || user.email} ${!user.isSuspended ? 'suspendido' : 'activado'} exitosamente`);
         fetchUsers(); // Refresh the list
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error?.message || 'Error al actualizar suspensión');
       }
     } catch (err) {
+      setError('Error de conexión al actualizar suspensión');
       console.error('Error updating suspension:', err);
     }
+  };
+
+  const handleCreateUser = (newUser: User) => {
+    setSuccessMessage(`Usuario ${newUser.name || newUser.email} creado exitosamente`);
+    fetchUsers(); // Refresh the list
+    setTimeout(() => setSuccessMessage(null), 3000);
   };
 
   const columns: Column<User>[] = [
@@ -265,12 +298,26 @@ export default function UsersManagementPage() {
                 Administra todos los usuarios del sistema
               </p>
             </div>
-            <Button>
+            <Button onClick={() => setShowCreateModal(true)}>
               <UserPlus className="h-4 w-4 mr-2" />
               Nuevo Usuario
             </Button>
           </div>
         </div>
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            {successMessage}
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
 
         {/* Filters */}
         <Card className="mb-6">
@@ -292,7 +339,7 @@ export default function UsersManagementPage() {
                     <SelectValue placeholder="Todos los roles" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos los roles</SelectItem>
+                    <SelectItem value="all">Todos los roles</SelectItem>
                     <SelectItem value="CLIENT">Cliente</SelectItem>
                     <SelectItem value="PROFESSIONAL">Profesional</SelectItem>
                     <SelectItem value="ADMIN">Administrador</SelectItem>
@@ -309,7 +356,7 @@ export default function UsersManagementPage() {
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="true">Verificados</SelectItem>
                     <SelectItem value="false">No verificados</SelectItem>
                   </SelectContent>
@@ -372,6 +419,13 @@ export default function UsersManagementPage() {
             />
           )}
           emptyMessage="No se encontraron usuarios"
+        />
+
+        {/* Create User Modal */}
+        <CreateUserModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={handleCreateUser}
         />
       </div>
     </div>

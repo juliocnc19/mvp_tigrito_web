@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { UserProfileResponseSchema } from '@/lib/schemas/user';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { getUserById } from '@/lib/db/queries/user';
@@ -62,20 +61,8 @@ export async function GET(request: NextRequest) {
       user: userData,
     };
 
-    // Validate response
-    const responseValidation = UserProfileResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'User profile retrieved successfully')
+      createSuccessResponse(responseData, 'User profile retrieved successfully')
     );
 
   } catch (error) {

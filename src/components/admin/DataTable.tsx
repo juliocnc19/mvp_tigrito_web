@@ -76,6 +76,9 @@ export function DataTable<T extends Record<string, any>>({
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<Record<string, any>>({});
 
+  // Ensure data is always an array
+  const safeData = Array.isArray(data) ? data : [];
+
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     onSearch?.(query);
@@ -194,14 +197,14 @@ export function DataTable<T extends Record<string, any>>({
                     </div>
                   </TableCell>
                 </TableRow>
-              ) : data.length === 0 ? (
+              ) : safeData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={columns.length + (actions ? 1 : 0)} className="text-center py-8">
                     <div className="text-gray-500">{emptyMessage}</div>
                   </TableCell>
                 </TableRow>
               ) : (
-                data.map((row, index) => (
+                safeData.map((row, index) => (
                   <TableRow key={index}>
                     {columns.map((column) => (
                       <TableCell key={String(column.key)}>

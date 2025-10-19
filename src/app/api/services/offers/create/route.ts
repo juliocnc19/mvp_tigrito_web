@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreateServiceOfferRequestSchema, ServiceOfferResponseSchema } from '@/lib/schemas/service';
+import { CreateServiceOfferRequestSchema } from '@/lib/schemas/service';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
@@ -57,20 +57,8 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // Validate response
-    const responseValidation = ServiceOfferResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Service offer created successfully'),
+      createSuccessResponse(responseData, 'Service offer created successfully'),
       { status: 201 }
     );
 

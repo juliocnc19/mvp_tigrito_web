@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ForgotPasswordRequestSchema, MessageResponseSchema } from '@/lib/schemas/auth';
+import { ForgotPasswordRequestSchema } from '@/lib/schemas/auth';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { authLogger } from '@/lib/utils';
@@ -104,25 +104,10 @@ export async function POST(request: NextRequest) {
       message: 'If the email exists, a password reset link has been sent',
     };
 
-    // Validate response
-    authLogger.info('FORGOT_PASSWORD_RESPONSE_VALIDATION_START', { requestId });
-    const responseValidation = MessageResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      authLogger.validationFailed('FORGOT_PASSWORD_RESPONSE_VALIDATION', responseValidation.error.issues);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-    authLogger.info('FORGOT_PASSWORD_RESPONSE_VALIDATION_SUCCESS', { requestId });
-
     authLogger.success('FORGOT_PASSWORD_COMPLETE', { requestId, email }, user.id);
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Password reset request processed')
+      createSuccessResponse(responseData, 'Password reset request processed')
     );
 
   } catch (error) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { EmailVerificationRequestSchema, MessageResponseSchema } from '@/lib/schemas/auth';
+import { EmailVerificationRequestSchema } from '@/lib/schemas/auth';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { verifyEmailVerificationToken, isTokenExpired } from '@/lib/auth/password';
@@ -87,20 +87,8 @@ export async function POST(request: NextRequest) {
       message: 'Email verified successfully',
     };
 
-    // Validate response
-    const responseValidation = MessageResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Email verification successful')
+      createSuccessResponse(responseData, 'Email verification successful')
     );
 
   } catch (error) {

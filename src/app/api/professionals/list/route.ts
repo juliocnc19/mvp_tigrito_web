@@ -98,26 +98,8 @@ export async function GET(request: NextRequest) {
       total,
     });
 
-    // Prepare response data
-    console.log('🔄 [GET /api/professionals/list] Preparing response data...');
-    const responseData = {
-      professionals,
-      total,
-    };
 
-    // Validate response
-    console.log('🔍 [GET /api/professionals/list] Validating response schema...');
-    const responseValidation = ProfessionalsListResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      console.error('❌ [GET /api/professionals/list] Response validation failed:', responseValidation.error.issues);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
+
 
     console.log('✅ [GET /api/professionals/list] Response validation successful');
 

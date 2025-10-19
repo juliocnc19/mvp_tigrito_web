@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleAuthRequestSchema, AuthResponseSchema } from '@/lib/schemas/auth';
+import { GoogleAuthRequestSchema } from '@/lib/schemas/auth';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { generateAccessToken, generateRefreshToken } from '@/lib/auth/jwt';
@@ -143,25 +143,13 @@ export async function POST(request: NextRequest) {
       refreshToken,
     };
 
-    // Validate response
-    const responseValidation = AuthResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     const message = isNewUser 
       ? 'User created and authenticated with Google'
       : 'Authentication successful with Google';
     const statusCode = isNewUser ? 201 : 200;
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, message),
+      createSuccessResponse(responseData, message),
       { status: statusCode }
     );
 

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ProfessionalStatsResponseSchema } from '@/lib/schemas/professional';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { getProfessionalStats } from '@/lib/db/queries/professional';
@@ -41,20 +40,8 @@ export async function GET(
       stats,
     };
 
-    // Validate response
-    const responseValidation = ProfessionalStatsResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Professional statistics retrieved successfully')
+      createSuccessResponse(responseData, 'Professional statistics retrieved successfully')
     );
 
   } catch (error) {

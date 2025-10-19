@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { OTPSendRequestSchema, OTPSendResponseSchema } from '@/lib/schemas/otp';
+import { OTPSendRequestSchema } from '@/lib/schemas/otp';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { generateOTP } from '@/lib/services/otp';
@@ -52,23 +52,9 @@ export async function POST(request: NextRequest) {
       expiresIn: otpResult.expiresIn,
     };
 
-    // Validate response
-    console.log('📱 [API send-otp] Validating response schema...');
-    const responseValidation = OTPSendResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      console.error('📱 [API send-otp] Response validation failed:', responseValidation.error);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     console.log('📱 [API send-otp] Returning success response');
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'OTP sent successfully')
+      createSuccessResponse(responseData, 'OTP sent successfully')
     );
 
   } catch (error) {

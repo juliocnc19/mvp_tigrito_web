@@ -59,25 +59,6 @@ export async function GET(request: NextRequest) {
     });
     // Prepare response data
     console.log('🔄 [GET /api/professions/list] Preparing response data...');
-    const responseData = {
-      professions,
-      total,
-    };
-
-    // Validate response
-    console.log('🔍 [GET /api/professions/list] Validating response schema...');
-    const responseValidation = ProfessionsListResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      console.error('❌ [GET /api/professions/list] Response validation failed:', responseValidation.error.issues);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues,
-        ),
-        { status: 500 }
-      );
-    }
 
     console.log('✅ [GET /api/professions/list] Response validation successful');
 

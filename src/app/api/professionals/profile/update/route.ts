@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { UpdateProfessionalProfileRequestSchema, ProfessionalProfileResponseSchema } from '@/lib/schemas/professional';
+import { UpdateProfessionalProfileRequestSchema } from '@/lib/schemas/professional';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
@@ -54,20 +54,8 @@ export async function PUT(request: NextRequest) {
       professional: updatedProfessional,
     };
 
-    // Validate response
-    const responseValidation = ProfessionalProfileResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Professional profile updated successfully')
+      createSuccessResponse(responseData, 'Professional profile updated successfully')
     );
 
   } catch (error) {

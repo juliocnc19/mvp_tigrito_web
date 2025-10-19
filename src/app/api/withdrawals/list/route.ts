@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GetWithdrawalsQuerySchema, WithdrawalsListResponseSchema } from '@/lib/schemas/withdrawal';
+import { GetWithdrawalsQuerySchema } from '@/lib/schemas/withdrawal';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES, paginationResponse } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { getWithdrawals } from '@/lib/db/queries/withdrawal';
@@ -57,23 +57,6 @@ export async function GET(request: NextRequest) {
       user: (withdrawal as any).user,
       paymentMethod: (withdrawal as any).paymentMethod,
     }));
-
-    const responseData = {
-      withdrawals: withdrawalsData,
-      total,
-    };
-
-    // Validate response
-    const responseValidation = WithdrawalsListResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
       paginationResponse(

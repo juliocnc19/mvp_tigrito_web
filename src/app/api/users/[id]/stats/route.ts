@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { UserStatsResponseSchema } from '@/lib/schemas/user';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { getUserStats } from '@/lib/db/queries/user';
@@ -34,20 +33,8 @@ export async function GET(
       stats,
     };
 
-    // Validate response
-    const responseValidation = UserStatsResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'User statistics retrieved successfully')
+      createSuccessResponse(responseData, 'User statistics retrieved successfully')
     );
 
   } catch (error) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GetProfessionalServicesQuerySchema, ProfessionalServicesListResponseSchema } from '@/lib/schemas/professional-service';
+import { GetProfessionalServicesQuerySchema } from '@/lib/schemas/professional-service';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES, paginationResponse } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { getProfessionalServices } from '@/lib/db/queries/professional-service';
@@ -108,26 +108,6 @@ export async function GET(request: NextRequest) {
     });
 
     console.log('✅ [GET /api/services/professional-services/list] Response data prepared successfully');
-
-    const responseData = { services: servicesData, total };
-
-    // Validate response
-    console.log('🔍 [GET /api/services/professional-services/list] Validating response schema...');
-    const responseValidation = ProfessionalServicesListResponseSchema.safeParse(responseData);
-
-    if (!responseValidation.success) {
-      console.error('❌ [GET /api/services/professional-services/list] Response validation failed:', responseValidation.error.issues);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues,
-        ),
-        { status: 500 }
-      );
-    }
-
-    console.log('✅ [GET /api/services/professional-services/list] Response validation successful');
 
     const response = NextResponse.json(
       paginationResponse(

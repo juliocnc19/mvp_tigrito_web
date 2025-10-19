@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreateReviewRequestSchema, ReviewResponseSchema } from '@/lib/schemas/review';
+import { CreateReviewRequestSchema } from '@/lib/schemas/review';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
@@ -55,21 +55,9 @@ export async function POST(request: NextRequest) {
     const review = await createReview(userId, { userId, transactionId, reviewedId, rating, comment, isProReview });
 
     const responseData = { review };
-    const responseValidation = ReviewResponseSchema.safeParse(responseData);
-
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues
-        ),
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Review created successfully'),
+      createSuccessResponse(responseData, 'Review created successfully'),
       { status: 201 }
     );
 

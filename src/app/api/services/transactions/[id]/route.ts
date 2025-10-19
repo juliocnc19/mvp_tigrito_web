@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TransactionResponseSchema } from '@/lib/schemas/transaction';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
 import { getServiceTransactionById } from '@/lib/db/queries/transaction';
@@ -50,21 +49,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const responseData = { transaction };
-    const responseValidation = TransactionResponseSchema.safeParse(responseData);
-
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues
-        ),
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Transaction retrieved successfully')
+      createSuccessResponse(responseData, 'Transaction retrieved successfully')
     );
   } catch (error) {
     console.error('Get transaction by ID error:', error);

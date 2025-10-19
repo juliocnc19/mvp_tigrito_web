@@ -48,13 +48,14 @@ export default function WithdrawalsManagementPage() {
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
   });
   const [filters, setFilters] = useState({
-    status: '',
+    status: 'all',
     search: '',
   });
   const [sorting, setSorting] = useState({
@@ -72,7 +73,7 @@ export default function WithdrawalsManagementPage() {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
-        ...(filters.status && { status: filters.status }),
+        ...(filters.status && filters.status !== 'all' && { status: filters.status }),
         ...(filters.search && { search: filters.search }),
         ...(sorting.sortBy && { sortBy: sorting.sortBy }),
         ...(sorting.sortDirection && { sortDirection: sorting.sortDirection }),
@@ -83,8 +84,9 @@ export default function WithdrawalsManagementPage() {
         throw new Error('Failed to fetch withdrawals');
       }
       const data = await response.json();
-      setWithdrawals(data.data.withdrawals);
-      setPagination(prev => ({ ...prev, total: data.data.total }));
+      console.log('API Response:', data); // Debug log
+      setWithdrawals(data.data || []);
+      setPagination(prev => ({ ...prev, total: data.pagination?.total || 0 }));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading withdrawals');
     } finally {
@@ -125,6 +127,7 @@ export default function WithdrawalsManagementPage() {
   const handleApproveWithdrawal = async (withdrawal: Withdrawal) => {
     if (confirm(`¿Estás seguro de que quieres aprobar el retiro de $${withdrawal.amount}?`)) {
       try {
+        setError(null);
         const response = await fetch(`/api/withdrawals/${withdrawal.id}/update`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -133,10 +136,17 @@ export default function WithdrawalsManagementPage() {
             adminNotes: 'Aprobado por administrador',
           }),
         });
+        
         if (response.ok) {
+          setSuccessMessage(`Retiro de $${withdrawal.amount} aprobado exitosamente`);
           fetchWithdrawals(); // Refresh the list
+          setTimeout(() => setSuccessMessage(null), 3000);
+        } else {
+          const errorData = await response.json();
+          setError(errorData.error?.message || 'Error al aprobar retiro');
         }
       } catch (err) {
+        setError('Error de conexión al aprobar retiro');
         console.error('Error approving withdrawal:', err);
       }
     }
@@ -146,6 +156,7 @@ export default function WithdrawalsManagementPage() {
     const reason = prompt('Motivo del rechazo:');
     if (reason) {
       try {
+        setError(null);
         const response = await fetch(`/api/withdrawals/${withdrawal.id}/update`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -155,10 +166,17 @@ export default function WithdrawalsManagementPage() {
             adminNotes: `Rechazado: ${reason}`,
           }),
         });
+        
         if (response.ok) {
+          setSuccessMessage(`Retiro de $${withdrawal.amount} rechazado exitosamente`);
           fetchWithdrawals(); // Refresh the list
+          setTimeout(() => setSuccessMessage(null), 3000);
+        } else {
+          const errorData = await response.json();
+          setError(errorData.error?.message || 'Error al rechazar retiro');
         }
       } catch (err) {
+        setError('Error de conexión al rechazar retiro');
         console.error('Error rejecting withdrawal:', err);
       }
     }
@@ -167,13 +185,21 @@ export default function WithdrawalsManagementPage() {
   const handleDeleteWithdrawal = async (withdrawal: Withdrawal) => {
     if (confirm(`¿Estás seguro de que quieres eliminar este retiro?`)) {
       try {
+        setError(null);
         const response = await fetch(`/api/withdrawals/${withdrawal.id}/delete`, {
           method: 'DELETE',
         });
+        
         if (response.ok) {
+          setSuccessMessage(`Retiro eliminado exitosamente`);
           fetchWithdrawals(); // Refresh the list
+          setTimeout(() => setSuccessMessage(null), 3000);
+        } else {
+          const errorData = await response.json();
+          setError(errorData.error?.message || 'Error al eliminar retiro');
         }
       } catch (err) {
+        setError('Error de conexión al eliminar retiro');
         console.error('Error deleting withdrawal:', err);
       }
     }
@@ -293,6 +319,20 @@ export default function WithdrawalsManagementPage() {
           </p>
         </div>
 
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            {successMessage}
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
@@ -374,7 +414,7 @@ export default function WithdrawalsManagementPage() {
                     <SelectValue placeholder="Todos los estados" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos los estados</SelectItem>
+                    <SelectItem value="all">Todos los estados</SelectItem>
                     <SelectItem value="PENDING">Pendiente</SelectItem>
                     <SelectItem value="COMPLETED">Completado</SelectItem>
                     <SelectItem value="FAILED">Fallido</SelectItem>

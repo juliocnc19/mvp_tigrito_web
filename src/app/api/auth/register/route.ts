@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RegisterRequestSchema, AuthResponseSchema } from '@/lib/schemas/auth';
+import { RegisterRequestSchema } from '@/lib/schemas/auth';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { authLogger } from '@/lib/utils';
@@ -137,26 +137,11 @@ export async function POST(request: NextRequest) {
       refreshToken,
     };
 
-    // Validate response
-    authLogger.info('REGISTER_RESPONSE_VALIDATION_START', { requestId }, user.id);
-    const responseValidation = AuthResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      authLogger.validationFailed('REGISTER_RESPONSE_VALIDATION', responseValidation.error.issues, user.id);
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-    authLogger.info('REGISTER_RESPONSE_VALIDATION_SUCCESS', { requestId }, user.id);
-
     authLogger.registerSuccess(user.id, user.role);
     authLogger.success('REGISTER_COMPLETE', { requestId, role: user.role }, user.id);
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'User registered successfully'),
+      createSuccessResponse(responseData, 'User registered successfully'),
       { status: 201 }
     );
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { UpdateUserProfileRequestSchema, UserProfileResponseSchema } from '@/lib/schemas/user';
+import { UpdateUserProfileRequestSchema } from '@/lib/schemas/user';
 import { validateRequest } from '@/lib/utils/validation';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { optionalAuth } from '@/lib/auth/middleware';
@@ -59,20 +59,8 @@ export async function PUT(request: NextRequest) {
       user: userData,
     };
 
-    // Validate response
-    const responseValidation = UserProfileResponseSchema.safeParse(responseData);
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed'
-        ),
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'User profile updated successfully')
+      createSuccessResponse(responseData, 'User profile updated successfully')
     );
 
   } catch (error) {

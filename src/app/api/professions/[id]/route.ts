@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ProfessionResponseSchema } from '@/lib/schemas/profession';
 import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
 import { getProfessionById } from '@/lib/db/queries/profession';
 
@@ -29,21 +28,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const responseData = { profession };
-    const responseValidation = ProfessionResponseSchema.safeParse(responseData);
-
-    if (!responseValidation.success) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.INTERNAL_ERROR,
-          'Response validation failed',
-          responseValidation.error.issues
-        ),
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
-      createSuccessResponse(responseValidation.data, 'Profession retrieved successfully')
+      createSuccessResponse(responseData, 'Profession retrieved successfully')
     );
   } catch (error) {
     console.error('Get profession by ID error:', error);

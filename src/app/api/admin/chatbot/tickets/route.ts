@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         { escalationReason: { contains: search, mode: 'insensitive' as const } },
         { initialSummary: { contains: search, mode: 'insensitive' as const } },
         { Conversation: { title: { contains: search, mode: 'insensitive' as const } } },
-        { User_SupportTicket_clientIdToUser: { name: { contains: search, mode: 'insensitive' as const } } },
+        { client: { name: { contains: search, mode: 'insensitive' as const } } },
       ];
     }
 
@@ -40,14 +40,14 @@ export async function GET(request: NextRequest) {
             createdAt: true,
           }
         },
-        User_SupportTicket_clientIdToUser: {
+        client: {
           select: {
             id: true,
             name: true,
             email: true,
           }
         },
-        User_SupportTicket_assignedToIdToUser: {
+        assignedTo: {
           select: {
             id: true,
             name: true,
@@ -78,8 +78,8 @@ export async function GET(request: NextRequest) {
         assignedAt: ticket.assignedAt,
         closedAt: ticket.closedAt,
         conversation: ticket.Conversation,
-        client: ticket.User_SupportTicket_clientIdToUser,
-        assignedTo: ticket.User_SupportTicket_assignedToIdToUser,
+        client: ticket.client,
+        assignedTo: ticket.assignedTo,
       })),
       pagination: {
         page,

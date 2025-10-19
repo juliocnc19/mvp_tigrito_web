@@ -23,18 +23,18 @@ export function BalanceCard({
   });
 
   return (
-    <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-8 shadow-lg">
+    <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
       <div className="mb-6">
-        <p className="text-sm opacity-90 mb-1">Saldo Disponible</p>
-        <h2 className="text-4xl font-bold">
+        <p className="text-sm text-gray-600 mb-1">Saldo Disponible</p>
+        <h2 className="text-4xl font-bold text-gray-900">
           {formattedBalance} {currency}
         </h2>
-        <p className="text-xs opacity-75 mt-2">Actualizado hace unos momentos</p>
+        <p className="text-xs text-gray-500 mt-2">Actualizado hace unos momentos</p>
       </div>
 
-      <div className="flex gap-3 pt-4 border-t border-white border-opacity-20">
+      <div className="flex gap-3 pt-4 border-t border-gray-200">
         <Button
-          variant="secondary"
+          variant="default"
           className="flex-1"
           onClick={onRecharge}
           asChild={!onRecharge}
@@ -47,7 +47,7 @@ export function BalanceCard({
         </Button>
         <Button
           variant="outline"
-          className="flex-1 bg-transparent text-white border-white hover:bg-white hover:bg-opacity-20"
+          className="flex-1"
           onClick={onWithdraw}
           asChild={!onWithdraw}
         >

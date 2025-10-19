@@ -32,14 +32,14 @@ export async function GET(
             }
           }
         },
-        User_SupportTicket_clientIdToUser: {
+        client: {
           select: {
             id: true,
             name: true,
             email: true,
           }
         },
-        User_SupportTicket_assignedToIdToUser: {
+        assignedTo: {
           select: {
             id: true,
             name: true,
@@ -85,8 +85,8 @@ export async function GET(
         createdAt: ticket.Conversation.createdAt,
         messages: transformedMessages,
       },
-      client: ticket.User_SupportTicket_clientIdToUser,
-      assignedTo: ticket.User_SupportTicket_assignedToIdToUser,
+      client: ticket.client,
+      assignedTo: ticket.assignedTo,
     };
 
     return NextResponse.json({

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { SearchBar, CategoryGrid, ServiceCard, ProfessionalCard } from '@/components';
+import { Star } from 'lucide-react';
 
 // Mock data
 const mockServices = [
@@ -197,10 +198,10 @@ export default function ServicesPage() {
               <div>
                 <label className="block text-sm font-semibold mb-2">Calificación</label>
                 <select className="w-full px-3 py-2 border rounded-lg text-sm">
-                  <option>Todas</option>
-                  <option>4.5+ ⭐</option>
-                  <option>4.0+ ⭐</option>
-                  <option>3.5+ ⭐</option>
+                  <option value="all">Todas</option>
+                  <option value="4.5">4.5+ ⭐</option>
+                  <option value="4.0">4.0+ ⭐</option>
+                  <option value="3.5">3.5+ ⭐</option>
                 </select>
               </div>
 

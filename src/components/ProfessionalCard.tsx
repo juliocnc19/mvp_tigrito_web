@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { User, Check, Star } from 'lucide-react';
 
 interface ProfessionalCardProps {
   id: string;
@@ -30,11 +31,11 @@ export function ProfessionalCard({
     <Link href={`/professionals/${id}`}>
       <div className="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
         {/* Avatar */}
-        <div className="bg-gradient-to-br from-blue-400 to-blue-600 h-40 w-full flex items-center justify-center relative">
-          <span className="text-white text-4xl">👤</span>
+        <div className="bg-gray-200 h-40 w-full flex items-center justify-center relative">
+          <User className="w-16 h-16 text-gray-400" />
           {verified && (
             <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">
-              ✓
+              <Check className="w-4 h-4" />
             </div>
           )}
         </div>
@@ -57,7 +58,7 @@ export function ProfessionalCard({
           {/* Rating */}
           <div className="flex items-center gap-1 mb-3 text-sm">
             <span className="text-yellow-500 font-bold">{rating.toFixed(1)}</span>
-            <span className="text-yellow-500">⭐</span>
+            <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
             {reviewCount > 0 && (
               <span className="text-gray-600">({reviewCount})</span>
             )}

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { Package, Star } from 'lucide-react';
 
 interface ServiceCardProps {
   id: string;
@@ -35,7 +36,7 @@ export function ServiceCard({
       <div className="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
         {/* Image Placeholder */}
         <div className="bg-gradient-to-br from-gray-200 to-gray-300 h-40 w-full flex items-center justify-center">
-          <span className="text-gray-400 text-3xl">📦</span>
+          <Package className="w-12 h-12 text-gray-400" />
         </div>
 
         {/* Content */}
@@ -60,7 +61,7 @@ export function ServiceCard({
 
           {/* Rating and Reviews */}
           <div className="flex items-center gap-1 mb-3 text-xs">
-            <span className="text-yellow-500">⭐</span>
+            <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
             <span className="font-semibold">{rating.toFixed(1)}</span>
             {reviewCount > 0 && (
               <span className="text-gray-600">({reviewCount} reseñas)</span>

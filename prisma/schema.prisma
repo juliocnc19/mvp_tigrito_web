@@ -436,7 +436,7 @@ model Conversation {
   job_postings  job_postings?             @relation(fields: [jobId], references: [id])
   participants  ConversationParticipant[]
   messages      Message[]
-  supportTicket SupportTicket?
+  SupportTicket SupportTicket?
 
   @@index([createdById])
   @@index([jobId])
@@ -484,7 +484,7 @@ model SupportTicket {
   openedAt         DateTime     @default(now())
   assignedAt       DateTime?
   closedAt         DateTime?
-  conversation     Conversation @relation(fields: [conversationId], references: [id])
+  Conversation     Conversation @relation(fields: [conversationId], references: [id])
   client           User         @relation("ClientTickets", fields: [clientId], references: [id])
   assignedTo       User?        @relation("AssignedTickets", fields: [assignedToId], references: [id])
 

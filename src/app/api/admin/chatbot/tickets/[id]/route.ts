@@ -16,7 +16,7 @@ export async function GET(
     const ticket = await prisma.supportTicket.findUnique({
       where: { id: ticketId },
       include: {
-        conversation: {
+        Conversation: {
           include: {
             messages: {
               include: {
@@ -32,14 +32,14 @@ export async function GET(
             }
           }
         },
-        client: {
+        User_SupportTicket_clientIdToUser: {
           select: {
             id: true,
             name: true,
             email: true,
           }
         },
-        assignedTo: {
+        User_SupportTicket_assignedToIdToUser: {
           select: {
             id: true,
             name: true,
@@ -57,7 +57,7 @@ export async function GET(
     }
 
     // Transform messages to match frontend expectations
-    const transformedMessages = ticket.conversation.messages.map(msg => ({
+    const transformedMessages = ticket.Conversation.messages.map((msg: any) => ({
       id: msg.id,
       content: msg.content,
       senderId: msg.senderId,
@@ -80,13 +80,13 @@ export async function GET(
       assignedAt: ticket.assignedAt,
       closedAt: ticket.closedAt,
       conversation: {
-        id: ticket.conversation.id,
-        title: ticket.conversation.title,
-        createdAt: ticket.conversation.createdAt,
+        id: ticket.Conversation.id,
+        title: ticket.Conversation.title,
+        createdAt: ticket.Conversation.createdAt,
         messages: transformedMessages,
       },
-      client: ticket.client,
-      assignedTo: ticket.assignedTo,
+      client: ticket.User_SupportTicket_clientIdToUser,
+      assignedTo: ticket.User_SupportTicket_assignedToIdToUser,
     };
 
     return NextResponse.json({

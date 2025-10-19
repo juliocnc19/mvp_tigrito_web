@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
           orderBy: { createdAt: 'asc' },
           take: 10, // Get last 10 messages for context
         },
-        supportTicket: {
+        SupportTicket: {
           select: {
             id: true,
             status: true,
@@ -97,14 +97,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if conversation is already escalated
-    if (conversation.supportTicket) {
+    if (conversation.SupportTicket) {
       console.log('🚫 Conversation already escalated, blocking AI response');
       return NextResponse.json(
         { 
           error: 'Esta conversación ya ha sido escalada a un agente humano. Un agente se pondrá en contacto contigo pronto.',
           escalated: true,
-          ticketId: conversation.supportTicket.id,
-          status: conversation.supportTicket.status
+          ticketId: conversation.SupportTicket.id,
+          status: conversation.SupportTicket.status
         },
         { status: 400 }
       );
@@ -160,6 +160,7 @@ export async function POST(request: NextRequest) {
         // Create support ticket
         ticket = await prisma.supportTicket.create({
           data: {
+            id: `ticket-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             conversationId,
             clientId: clientUser.id,
             status: 'PENDING_HUMAN_ASSIGNMENT',

@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
       whereClause.OR = [
         { escalationReason: { contains: search, mode: 'insensitive' as const } },
         { initialSummary: { contains: search, mode: 'insensitive' as const } },
-        { conversation: { title: { contains: search, mode: 'insensitive' as const } } },
-        { client: { name: { contains: search, mode: 'insensitive' as const } } },
+        { Conversation: { title: { contains: search, mode: 'insensitive' as const } } },
+        { User_SupportTicket_clientIdToUser: { name: { contains: search, mode: 'insensitive' as const } } },
       ];
     }
 
@@ -33,21 +33,21 @@ export async function GET(request: NextRequest) {
     const tickets = await prisma.supportTicket.findMany({
       where: whereClause,
       include: {
-        conversation: {
+        Conversation: {
           select: {
             id: true,
             title: true,
             createdAt: true,
           }
         },
-        client: {
+        User_SupportTicket_clientIdToUser: {
           select: {
             id: true,
             name: true,
             email: true,
           }
         },
-        assignedTo: {
+        User_SupportTicket_assignedToIdToUser: {
           select: {
             id: true,
             name: true,
@@ -77,9 +77,9 @@ export async function GET(request: NextRequest) {
         openedAt: ticket.openedAt,
         assignedAt: ticket.assignedAt,
         closedAt: ticket.closedAt,
-        conversation: ticket.conversation,
-        client: ticket.client,
-        assignedTo: ticket.assignedTo,
+        conversation: ticket.Conversation,
+        client: ticket.User_SupportTicket_clientIdToUser,
+        assignedTo: ticket.User_SupportTicket_assignedToIdToUser,
       })),
       pagination: {
         page,

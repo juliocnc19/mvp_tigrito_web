@@ -1,0 +1,37 @@
+task_assignments:
+  - task_group: "Task Group 1: Professional Data Models"
+    assigned_subagent: "database-engineer"
+
+  - task_group: "Task Group 2: Professional Management APIs"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 3: Real-time Features & File Upload"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 4: React Query Integration"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 5: UI Component Updates"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 6: Integration Testing"
+    assigned_subagent: "testing-engineer"
+  - task_group: "Task Group 1: Professional Data Models"
+    assigned_subagent: "database-engineer"
+
+  - task_group: "Task Group 2: Professional Management APIs"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 3: Real-time Features & File Upload"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 4: React Query Integration"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 5: UI Component Updates"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 6: Integration Testing"
+    assigned_subagent: "testing-engineer"
+
+

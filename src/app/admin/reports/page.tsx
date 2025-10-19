@@ -31,14 +31,13 @@ import { Textarea } from '@/components/ui/textarea';
 interface Report {
   id: string;
   reporterId: string;
-  reportedUserId: string;
-  transactionId: string | null;
+  reportedId: string | null;
+  serviceId: string | null;
   reason: string;
-  description: string;
+  proofMedia: any;
   status: 'PENDING' | 'REVIEWED' | 'RESOLVED' | 'DISMISSED';
   adminNotes: string | null;
   createdAt: string;
-  updatedAt: string;
   reporter: {
     id: string;
     name: string | null;
@@ -52,8 +51,8 @@ interface Report {
     email: string | null;
     phone: string | null;
     role: string;
-  };
-  transaction: {
+  } | null;
+  service: {
     id: string;
     currentStatus: string;
     priceAgreed: number;
@@ -294,9 +293,9 @@ export default function ReportsManagementPage() {
       sortable: true,
       render: (value, report) => (
         <div>
-          <div className="font-medium">{report.reportedUser.name || 'Sin nombre'}</div>
-          <div className="text-sm text-gray-500">{report.reportedUser.email}</div>
-          <div className="text-xs text-gray-400">{report.reportedUser.role}</div>
+          <div className="font-medium">{report.reportedUser?.name || 'Sin nombre'}</div>
+          <div className="text-sm text-gray-500">{report.reportedUser?.email || 'Sin email'}</div>
+          <div className="text-xs text-gray-400">{report.reportedUser?.role || 'Sin rol'}</div>
         </div>
       ),
     },
@@ -311,32 +310,32 @@ export default function ReportsManagementPage() {
       ),
     },
     {
-      key: 'description',
-      header: 'Descripción',
+      key: 'reason',
+      header: 'Motivo',
       render: (value) => (
         <div className="max-w-xs">
           <span className="text-sm text-gray-600">
-            {value.length > 100 ? `${value.substring(0, 100)}...` : value}
+            {value}
           </span>
         </div>
       ),
     },
     {
-      key: 'transaction',
-      header: 'Transacción',
+      key: 'service',
+      header: 'Servicio',
       render: (value, report) => (
         <div>
-          {report.transaction ? (
+          {report.service ? (
             <div>
               <div className="text-sm font-medium">
-                ${report.transaction.priceAgreed.toLocaleString()}
+                ${report.service.priceAgreed.toLocaleString()}
               </div>
               <div className="text-xs text-gray-500">
-                {report.transaction.currentStatus}
+                {report.service.currentStatus}
               </div>
             </div>
           ) : (
-            <span className="text-sm text-gray-400">Sin transacción</span>
+            <span className="text-sm text-gray-400">Sin servicio</span>
           )}
         </div>
       ),
@@ -569,9 +568,9 @@ export default function ReportsManagementPage() {
                   <div>
                     <Label className="text-sm font-medium">Usuario Reportado</Label>
                     <div className="mt-1">
-                      <div className="font-medium">{selectedReport.reportedUser.name || 'Sin nombre'}</div>
-                      <div className="text-sm text-gray-500">{selectedReport.reportedUser.email}</div>
-                      <div className="text-xs text-gray-400">{selectedReport.reportedUser.role}</div>
+                      <div className="font-medium">{selectedReport.reportedUser?.name || 'Sin nombre'}</div>
+                      <div className="text-sm text-gray-500">{selectedReport.reportedUser?.email || 'Sin email'}</div>
+                      <div className="text-xs text-gray-400">{selectedReport.reportedUser?.role || 'Sin rol'}</div>
                     </div>
                   </div>
                 </div>
@@ -588,37 +587,37 @@ export default function ReportsManagementPage() {
                 <div>
                   <Label className="text-sm font-medium">Descripción</Label>
                   <div className="mt-1 p-3 bg-gray-50 rounded-md">
-                    <p className="text-sm">{selectedReport.description}</p>
+                    <p className="text-sm">{selectedReport.reason}</p>
                   </div>
                 </div>
 
-                {selectedReport.transaction && (
+                {selectedReport.service && (
                   <div>
-                    <Label className="text-sm font-medium">Transacción Relacionada</Label>
+                    <Label className="text-sm font-medium">Servicio Relacionado</Label>
                     <div className="mt-1 p-3 bg-gray-50 rounded-md">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <div className="text-sm font-medium">Cliente</div>
                           <div className="text-sm text-gray-600">
-                            {selectedReport.transaction.client.name || selectedReport.transaction.client.email}
+                            {selectedReport.service.client.name || selectedReport.service.client.email}
                           </div>
                         </div>
                         <div>
                           <div className="text-sm font-medium">Profesional</div>
                           <div className="text-sm text-gray-600">
-                            {selectedReport.transaction.professional.name || selectedReport.transaction.professional.email}
+                            {selectedReport.service.professional.name || selectedReport.service.professional.email}
                           </div>
                         </div>
                         <div>
                           <div className="text-sm font-medium">Monto</div>
                           <div className="text-sm text-gray-600">
-                            ${selectedReport.transaction.priceAgreed.toLocaleString()}
+                            ${selectedReport.service.priceAgreed.toLocaleString()}
                           </div>
                         </div>
                         <div>
                           <div className="text-sm font-medium">Estado</div>
                           <div className="text-sm text-gray-600">
-                            {selectedReport.transaction.currentStatus}
+                            {selectedReport.service.currentStatus}
                           </div>
                         </div>
                       </div>

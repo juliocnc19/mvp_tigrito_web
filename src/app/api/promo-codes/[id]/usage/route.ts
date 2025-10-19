@@ -53,7 +53,7 @@ export async function GET(
     // Get usage history with pagination
     const [usageHistory, total] = await Promise.all([
       prisma.promoCodeUsage.findMany({
-        where: { promoCodeId: id },
+        where: { codeId: id },
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { usedAt: 'desc' },
@@ -67,33 +67,10 @@ export async function GET(
               role: true,
             },
           },
-          transaction: {
-            select: {
-              id: true,
-              priceAgreed: true,
-              discountAmount: true,
-              currentStatus: true,
-              createdAt: true,
-              client: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                },
-              },
-              professional: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                },
-              },
-            },
-          },
         },
       }),
       prisma.promoCodeUsage.count({
-        where: { promoCodeId: id },
+        where: { codeId: id },
       }),
     ]);
 
@@ -101,11 +78,9 @@ export async function GET(
     const usageData = usageHistory.map(usage => ({
       id: usage.id,
       userId: usage.userId,
-      promoCodeId: usage.promoCodeId,
-      transactionId: usage.transactionId,
+      codeId: usage.codeId,
       usedAt: usage.usedAt.toISOString(),
       user: usage.user,
-      transaction: usage.transaction,
     }));
 
     return NextResponse.json(

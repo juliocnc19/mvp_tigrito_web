@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
               role: true,
             },
           },
-          transaction: {
+          service: {
             select: {
               id: true,
               currentStatus: true,
@@ -101,17 +101,16 @@ export async function GET(request: NextRequest) {
     const reportsData = reports.map(report => ({
       id: report.id,
       reporterId: report.reporterId,
-      reportedUserId: report.reportedUserId,
-      transactionId: report.transactionId,
+      reportedId: report.reportedId,
+      serviceId: report.serviceId,
       reason: report.reason,
-      description: report.description,
+      proofMedia: report.proofMedia,
       status: report.status,
       adminNotes: report.adminNotes,
       createdAt: report.createdAt.toISOString(),
-      updatedAt: report.updatedAt.toISOString(),
       reporter: report.reporter,
       reportedUser: report.reportedUser,
-      transaction: report.transaction,
+      service: report.service,
       media: report.media,
     }));
 

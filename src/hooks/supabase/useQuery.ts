@@ -1,35 +1,42 @@
-'use client'
-
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { PostgrestError } from '@supabase/supabase-js'
 
-export interface UseQueryOptions {
+export interface UseQueryOptions<T> {
   enabled?: boolean
   refetchOnWindowFocus?: boolean
   staleTime?: number
+  cacheTime?: number
 }
 
-export interface UseQueryReturn<T> {
-  data: T | null
-  loading: boolean
+export interface UseQueryResult<T> {
+  data: T[] | null
   error: PostgrestError | null
-  refetch: () => Promise<void>
+  loading: boolean
+  refetch: () => void
+  isStale: boolean
 }
 
-export function useQuery<T>(
-  queryFn: () => Promise<{ data: T | null; error: PostgrestError | null }>,
-  options: UseQueryOptions = {}
-): UseQueryReturn<T> {
+interface GenericStringError {
+  [key: string]: string
+}
+
+export function useQuery<T = any>(
+  queryFn: () => Promise<{ data: T[] | null; error: PostgrestError | null }>,
+  options: UseQueryOptions<T> = {}
+): UseQueryResult<T> {
   const {
     enabled = true,
     refetchOnWindowFocus = true,
-    staleTime = 0,
+    staleTime = 5 * 60 * 1000, // 5 minutes
+    cacheTime = 10 * 60 * 1000, // 10 minutes
   } = options
 
-  const [data, setData] = useState<T | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<T[] | null>(null)
   const [error, setError] = useState<PostgrestError | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [isStale, setIsStale] = useState(false)
+  const [lastFetch, setLastFetch] = useState<number>(0)
 
   const executeQuery = useCallback(async () => {
     if (!enabled) return
@@ -39,10 +46,13 @@ export function useQuery<T>(
 
     try {
       const result = await queryFn()
+      
       if (result.error) {
         setError(result.error)
       } else {
         setData(result.data)
+        setLastFetch(Date.now())
+        setIsStale(false)
       }
     } catch (err) {
       setError(err as PostgrestError)
@@ -51,60 +61,81 @@ export function useQuery<T>(
     }
   }, [queryFn, enabled])
 
-  useEffect(() => {
+  const refetch = useCallback(() => {
     executeQuery()
   }, [executeQuery])
 
-  // Refetch on window focus
+  useEffect(() => {
+    if (enabled) {
+      executeQuery()
+    }
+  }, [executeQuery, enabled])
+
   useEffect(() => {
     if (!refetchOnWindowFocus) return
 
     const handleFocus = () => {
-      if (staleTime === 0) {
+      const now = Date.now()
+      if (now - lastFetch > staleTime) {
+        setIsStale(true)
         executeQuery()
       }
     }
 
     window.addEventListener('focus', handleFocus)
     return () => window.removeEventListener('focus', handleFocus)
-  }, [executeQuery, refetchOnWindowFocus, staleTime])
+  }, [refetchOnWindowFocus, lastFetch, staleTime, executeQuery])
+
+  useEffect(() => {
+    if (!enabled) return
+
+    const interval = setInterval(() => {
+      const now = Date.now()
+      if (now - lastFetch > staleTime) {
+        setIsStale(true)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [enabled, lastFetch, staleTime])
 
   return {
     data,
-    loading,
     error,
-    refetch: executeQuery,
+    loading,
+    refetch,
+    isStale,
   }
 }
 
-// Hook específico para consultas de Supabase
-export function useSupabaseQuery<T>(
+// Hook específico para Supabase
+export function useSupabaseQuery<T = any>(
   table: string,
   select = '*',
-  options: UseQueryOptions = {}
-) {
+  options: UseQueryOptions<T> = {}
+): UseQueryResult<T> {
+
   const queryFn = useCallback(async () => {
     const { data, error } = await supabase
       .from(table)
       .select(select)
-    
-    return { data, error }
+    return { data: data as T[] | null, error }
   }, [table, select])
 
-  return useQuery<T[]>(queryFn, options)
+  return useQuery<T>(queryFn, options)
 }
 
-// Hook para consultas con filtros
-export function useSupabaseQueryWithFilters<T>(
+// Hook para queries con filtros
+export function useSupabaseQueryWithFilters<T = any>(
   table: string,
   filters: Record<string, any> = {},
   select = '*',
-  options: UseQueryOptions = {}
-) {
+  options: UseQueryOptions<T> = {}
+): UseQueryResult<T> {
+
   const queryFn = useCallback(async () => {
     let query = supabase.from(table).select(select)
 
-    // Aplicar filtros
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         query = query.eq(key, value)
@@ -112,9 +143,8 @@ export function useSupabaseQueryWithFilters<T>(
     })
 
     const { data, error } = await query
-    
-    return { data, error }
+    return { data: data as T[] | null, error }
   }, [table, select, filters])
 
-  return useQuery<T[]>(queryFn, options)
+  return useQuery<T>(queryFn, options)
 }

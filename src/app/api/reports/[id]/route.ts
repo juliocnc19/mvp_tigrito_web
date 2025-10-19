@@ -66,7 +66,7 @@ export async function GET(
             },
           },
         },
-        transaction: {
+        service: {
           include: {
             client: {
               select: {
@@ -124,7 +124,7 @@ export async function GET(
             url: true,
             type: true,
             filename: true,
-            size: true,
+            sizeBytes: true,
           },
         },
       },
@@ -144,17 +144,16 @@ export async function GET(
     const reportData = {
       id: report.id,
       reporterId: report.reporterId,
-      reportedUserId: report.reportedUserId,
-      transactionId: report.transactionId,
+      reportedId: report.reportedId,
+      serviceId: report.serviceId,
       reason: report.reason,
-      description: report.description,
+      proofMedia: report.proofMedia,
       status: report.status,
       adminNotes: report.adminNotes,
       createdAt: report.createdAt.toISOString(),
-      updatedAt: report.updatedAt.toISOString(),
       reporter: report.reporter,
       reportedUser: report.reportedUser,
-      transaction: report.transaction,
+      service: report.service,
       media: report.media,
     };
 

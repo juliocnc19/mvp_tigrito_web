@@ -93,7 +93,7 @@ export async function PUT(
             role: true,
           },
         },
-        transaction: {
+        service: {
           select: {
             id: true,
             currentStatus: true,
@@ -115,17 +115,16 @@ export async function PUT(
     const reportData = {
       id: updatedReport.id,
       reporterId: updatedReport.reporterId,
-      reportedUserId: updatedReport.reportedUserId,
-      transactionId: updatedReport.transactionId,
+      reportedId: updatedReport.reportedId,
+      serviceId: updatedReport.serviceId,
       reason: updatedReport.reason,
-      description: updatedReport.description,
+      proofMedia: updatedReport.proofMedia,
       status: updatedReport.status,
       adminNotes: updatedReport.adminNotes,
       createdAt: updatedReport.createdAt.toISOString(),
-      updatedAt: updatedReport.updatedAt.toISOString(),
       reporter: updatedReport.reporter,
       reportedUser: updatedReport.reportedUser,
-      transaction: updatedReport.transaction,
+      service: updatedReport.service,
       media: updatedReport.media,
     };
 

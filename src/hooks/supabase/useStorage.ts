@@ -1,112 +1,112 @@
-'use client'
-
 import { useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import { StorageError } from '@supabase/supabase-js'
 
 export interface UseStorageOptions {
-  onSuccess?: (url: string) => void
-  onError?: (error: StorageError) => void
+  bucket: string
+  path?: string
 }
 
-export interface UseStorageReturn {
-  uploadFile: (file: File, path: string) => Promise<{ url: string | null; error: StorageError | null }>
-  deleteFile: (path: string) => Promise<{ error: StorageError | null }>
+export interface UseStorageResult {
+  uploadFile: (file: File, fileName?: string) => Promise<{ data: any; error: any }>
+  downloadFile: (path: string) => Promise<{ data: Blob | null; error: any }>
+  deleteFile: (path: string) => Promise<{ data: any; error: any }>
   getPublicUrl: (path: string) => string
   loading: boolean
-  error: StorageError | null
+  error: string | null
 }
 
-export function useStorage(
-  bucket: string,
-  options: UseStorageOptions = {}
-): UseStorageReturn {
-  const { onSuccess, onError } = options
-
+export function useStorage(options: UseStorageOptions): UseStorageResult {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<StorageError | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const uploadFile = useCallback(async (file: File, path: string) => {
+  const uploadFile = useCallback(async (file: File, fileName?: string) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const filePath = fileName || `${options.path || ''}/${file.name}`
+      
+      const { data, error } = await supabase.storage
+        .from(options.bucket)
+        .upload(filePath, file)
+
+      if (error) {
+        setError(error.message)
+        return { data: null, error }
+      }
+
+      return { data, error: null }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Upload failed'
+      setError(errorMessage)
+      return { data: null, error: { message: errorMessage } }
+    } finally {
+      setLoading(false)
+    }
+  }, [supabase, options.bucket, options.path])
+
+  const downloadFile = useCallback(async (path: string) => {
     setLoading(true)
     setError(null)
 
     try {
       const { data, error } = await supabase.storage
-        .from(bucket)
-        .upload(path, file)
+        .from(options.bucket)
+        .download(path)
 
       if (error) {
-        setError(error)
-        onError?.(error)
-        return { url: null, error }
+        setError(error.message)
+        return { data: null, error }
       }
 
-      const url = getPublicUrl(data.path)
-      onSuccess?.(url)
-      return { url, error: null }
+      return { data, error: null }
     } catch (err) {
-      const error = err as StorageError
-      setError(error)
-      onError?.(error)
-      return { url: null, error }
+      const errorMessage = err instanceof Error ? err.message : 'Download failed'
+      setError(errorMessage)
+      return { data: null, error: { message: errorMessage } }
     } finally {
       setLoading(false)
     }
-  }, [bucket, onSuccess, onError])
+  }, [supabase, options.bucket])
 
   const deleteFile = useCallback(async (path: string) => {
     setLoading(true)
     setError(null)
 
     try {
-      const { error } = await supabase.storage
-        .from(bucket)
+      const { data, error } = await supabase.storage
+        .from(options.bucket)
         .remove([path])
 
       if (error) {
-        setError(error)
-        onError?.(error)
+        setError(error.message)
+        return { data: null, error }
       }
 
-      return { error }
+      return { data, error: null }
     } catch (err) {
-      const error = err as StorageError
-      setError(error)
-      onError?.(error)
-      return { error }
+      const errorMessage = err instanceof Error ? err.message : 'Delete failed'
+      setError(errorMessage)
+      return { data: null, error: { message: errorMessage } }
     } finally {
       setLoading(false)
     }
-  }, [bucket, onError])
+  }, [supabase, options.bucket])
 
   const getPublicUrl = useCallback((path: string) => {
     const { data } = supabase.storage
-      .from(bucket)
+      .from(options.bucket)
       .getPublicUrl(path)
 
     return data.publicUrl
-  }, [bucket])
+  }, [supabase, options.bucket])
 
   return {
     uploadFile,
+    downloadFile,
     deleteFile,
     getPublicUrl,
     loading,
     error,
   }
-}
-
-// Hook específico para subir imágenes de perfil
-export function useProfileImageUpload(options: UseStorageOptions = {}) {
-  return useStorage('avatars', options)
-}
-
-// Hook específico para subir documentos
-export function useDocumentUpload(options: UseStorageOptions = {}) {
-  return useStorage('documents', options)
-}
-
-// Hook específico para subir imágenes de servicios
-export function useServiceImageUpload(options: UseStorageOptions = {}) {
-  return useStorage('service-images', options)
 }

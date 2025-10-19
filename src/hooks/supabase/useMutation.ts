@@ -76,7 +76,7 @@ export function useInsert<TData>(
   const mutationFn = useCallback(async (data: Partial<TData>) => {
     const { data: result, error } = await supabase
       .from(table)
-      .insert(data)
+      .insert(data as any)
       .select()
       .single()
 
@@ -92,7 +92,7 @@ export function useUpdate<TData>(
   options: UseMutationOptions = {}
 ) {
   const mutationFn = useCallback(async ({ id, ...data }: Partial<TData> & { id: string }) => {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await (supabase as any)
       .from(table)
       .update(data)
       .eq('id', id)
@@ -130,7 +130,7 @@ export function useBatchInsert<TData>(
   const mutationFn = useCallback(async (data: Partial<TData>[]) => {
     const { data: result, error } = await supabase
       .from(table)
-      .insert(data)
+      .insert(data as any)
       .select()
 
     return { data: result, error }

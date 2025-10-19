@@ -1,7 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 // Configuración para el cliente del lado del navegador (solo base de datos)
-export const createSupabaseClient = () => {
+export const createSupabaseClientInstance = (): ReturnType<typeof createSupabaseClient> => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
@@ -9,16 +9,14 @@ export const createSupabaseClient = () => {
     throw new Error('Missing Supabase environment variables')
   }
 
-  return createClient(supabaseUrl, supabaseAnonKey, {
-    // Configuración mínima para solo base de datos
-    db: {
-      schema: 'public'
-    }
-  })
+  return createSupabaseClient(supabaseUrl, supabaseAnonKey)
 }
 
 // Cliente singleton para uso en componentes del cliente
-export const supabase = createSupabaseClient()
+export const supabase = createSupabaseClientInstance()
 
 // Función helper para obtener el cliente en componentes del servidor
-export const getSupabaseClient = () => createSupabaseClient()
+export const getSupabaseClient = () => createSupabaseClientInstance()
+
+// Exportar createClient para compatibilidad
+export const createClient = createSupabaseClientInstance

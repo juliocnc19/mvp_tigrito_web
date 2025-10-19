@@ -1,5 +1,5 @@
 // Clientes de Supabase
-export { supabase, createSupabaseClient, getSupabaseClient } from './client'
+export { supabase, createClient, getSupabaseClient } from './client'
 export { 
   createSupabaseServerClient, 
   createSupabaseAdminClient, 

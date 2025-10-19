@@ -8,6 +8,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "vercel-install": "npm i --legacy-peer-deps && npm i @radix-ui/react-switch --legacy-peer-deps && npx prisma generate && npx next-openapi-gen generate",
     "db:seed": "node prisma/seed.ts",
     "db:reset": "prisma migrate reset --force && npm run db:seed"
   },
@@ -27,6 +28,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@scalar/api-reference-react": "^0.8.1",
     "@supabase/supabase-js": "^2.75.1",

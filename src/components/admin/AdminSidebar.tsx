@@ -20,6 +20,7 @@ import {
   Bell,
   MessageCircle,
   Image,
+  Play,
 } from 'lucide-react';
 
 const navigationItems = [
@@ -97,6 +98,11 @@ const navigationItems = [
     title: 'Conversaciones',
     href: '/admin/conversations',
     icon: MessageCircle,
+  },
+  {
+    title: 'Playground',
+    href: '/admin/chatbot/playground',
+    icon: Play,
   },
 ];
 

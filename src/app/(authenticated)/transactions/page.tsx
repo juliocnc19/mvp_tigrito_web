@@ -15,23 +15,34 @@ export default function TransactionsPage() {
 
       {/* Tabs */}
       <section className="mb-6">
-        {/* TODO: TransactionTabs Component */}
         <div className="flex gap-4 border-b">
           <button 
             onClick={() => setTab('active')}
-            className={`px-4 py-2 font-semibold ${tab === 'active' ? 'border-b-2 border-primary' : ''}`}
+            className={`px-4 py-3 font-semibold border-b-2 transition-colors ${
+              tab === 'active'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-600 hover:text-gray-900'
+            }`}
           >
             Activas
           </button>
           <button 
             onClick={() => setTab('completed')}
-            className={`px-4 py-2 font-semibold ${tab === 'completed' ? 'border-b-2 border-primary' : ''}`}
+            className={`px-4 py-3 font-semibold border-b-2 transition-colors ${
+              tab === 'completed'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-600 hover:text-gray-900'
+            }`}
           >
             Completadas
           </button>
           <button 
             onClick={() => setTab('cancelled')}
-            className={`px-4 py-2 font-semibold ${tab === 'cancelled' ? 'border-b-2 border-primary' : ''}`}
+            className={`px-4 py-3 font-semibold border-b-2 transition-colors ${
+              tab === 'cancelled'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-600 hover:text-gray-900'
+            }`}
           >
             Canceladas
           </button>
@@ -40,10 +51,10 @@ export default function TransactionsPage() {
 
       {/* Transactions List */}
       <section>
-        {/* TODO: TransactionList Component */}
         <div className="space-y-4">
-          {/* TODO: TransactionCard Components */}
-          <div className="bg-card rounded-lg p-6">Transaction Card Placeholder</div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-gray-600">Transaction Card Placeholder</p>
+          </div>
         </div>
       </section>
     </div>

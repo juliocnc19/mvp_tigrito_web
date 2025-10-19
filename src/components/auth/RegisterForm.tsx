@@ -62,10 +62,15 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
         await onSubmit(data);
       } else {
         // Use Zustand + React Query combined hook
-        await register(registerData.name, registerData.email, registerData.password);
+        const result = await register(registerData.name, registerData.email, registerData.password);
 
-        // Redirect to verification on success
-        window.location.href = '/verification/intro';
+        // Redirect based on user role (same logic as login)
+        if (result.user.role === 'ADMIN') {
+          window.location.href = '/admin';
+        } else {
+          // Default to client dashboard for CLIENT and other roles
+          window.location.href = '/dashboard';
+        }
       }
     } catch (err) {
       // Error is handled by the useAuth hook

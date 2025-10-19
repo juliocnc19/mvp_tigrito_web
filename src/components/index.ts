@@ -10,5 +10,8 @@ export { RequestCard } from './RequestCard';
 export { TopNavigation } from './TopNavigation';
 export { SidebarNavigation } from './SidebarNavigation';
 
+// Auth Components
+export { ProtectedRoute } from './auth/ProtectedRoute';
+
 // Admin Components
 export { CreateUserModal } from './admin/CreateUserModal';

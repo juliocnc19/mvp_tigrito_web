@@ -57,7 +57,7 @@ export default function MyRequestsPage() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Mis Solicitudes</h1>
         <Link href="/my-requests/create">
-          <Button className="bg-green-600 hover:bg-green-700">
+          <Button>
             + Nueva Solicitud
           </Button>
         </Link>
@@ -131,9 +131,9 @@ export default function MyRequestsPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
-            <p className="text-blue-900 font-semibold mb-2">No hay solicitudes</p>
-            <p className="text-blue-700 mb-4">
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <p className="text-gray-900 font-semibold mb-2">No hay solicitudes</p>
+            <p className="text-gray-600 mb-4">
               {tab === 'open'
                 ? 'Aún no has publicado ninguna solicitud abierta.'
                 : tab === 'in-progress'
@@ -142,7 +142,7 @@ export default function MyRequestsPage() {
             </p>
             {tab === 'open' && (
               <Link href="/my-requests/create">
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button>
                   Publicar primera solicitud
                 </Button>
               </Link>

@@ -95,6 +95,7 @@ model Profession {
   slug              String                @unique
   description       String?
   createdAt         DateTime              @default(now())
+  image_url         String?
   links             ProfessionLink[]
   proactiveServices ProfessionalService[]
   postings          ServicePosting[]
@@ -123,6 +124,7 @@ model ServicePosting {
   lat           Float?
   lng           Float?
   address       String?
+  image_url     String?
   requiredFrom  DateTime?
   requiredTo    DateTime?
   priceMin      Decimal?            @db.Decimal(14, 2)
@@ -174,6 +176,7 @@ model ProfessionalService {
   price                 Decimal              @db.Decimal(14, 2)
   categoryId            String
   serviceLocations      Json?
+  image_url             String?
   isActive              Boolean              @default(true)
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @updatedAt
@@ -638,6 +641,7 @@ model proposals {
   @@index([professionalId])
   @@index([status])
 }
+
 
 enum Role {
   CLIENT

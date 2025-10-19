@@ -108,9 +108,9 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <div className={cn('flex h-full w-64 flex-col bg-gray-900 text-white', className)}>
+    <div className={cn('flex h-full w-64 flex-col bg-[var(--color-sidebar-bg)] text-[var(--color-sidebar-text)]', className)}>
       {/* Logo */}
-      <div className="flex h-16 items-center justify-center border-b border-gray-700">
+      <div className="flex h-16 items-center justify-center border-b border-[var(--color-sidebar-border)]">
         <h1 className="text-xl font-bold">Admin Panel</h1>
       </div>
 
@@ -127,8 +127,8 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
               className={cn(
                 'flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  ? 'bg-[var(--color-brand-primary)] text-[var(--color-sidebar-text)]'
+                  : 'text-[var(--color-sidebar-text-secondary)] hover:bg-[var(--color-sidebar-hover)] hover:text-[var(--color-sidebar-text)]'
               )}
             >
               <Icon className="h-5 w-5" />
@@ -139,14 +139,14 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-gray-700 p-4">
+      <div className="border-t border-[var(--color-sidebar-border)] p-4">
         <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-full bg-[var(--color-brand-primary)] flex items-center justify-center">
             <UserCheck className="h-4 w-4 text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">Admin User</p>
-            <p className="text-xs text-gray-400 truncate">admin@example.com</p>
+            <p className="text-xs text-[var(--color-sidebar-text-secondary)] truncate">admin@example.com</p>
           </div>
         </div>
       </div>

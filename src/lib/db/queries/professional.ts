@@ -54,140 +54,8 @@ export async function getProfessionalById(id: string): Promise<any> {
 
 // Get professional by user ID
 export async function getProfessionalByUserId(userId: string): Promise<any> {
-  return prisma.professionalProfile.findFirst({
+  return prisma.professionalProfile.findUnique({
     where: { userId },
-    include: {
-      user: true,
-      servicesOffered: true,
-      reviews: true,
-    },
-  });
-}
-
-// Update professional profile
-export async function updateProfessionalProfile(
-  id: string,
-  data: {
-    bio?: string | null;
-    yearsOfExperience?: number | null;
-    certifications?: string | null;
-    specialties?: string[];
-    hourlyRate?: number | null;
-    bankAccount?: string | null;
-    taxId?: string | null;
-    isVerified?: boolean;
-    rating?: number | null;
-    responseTime?: number | null;
-    completionRate?: number | null;
-  }
-): Promise<ProfessionalProfile> {
-  return prisma.professionalProfile.update({
-    where: { id },
-    data,
-  });
-}
-
-// Verify professional
-export async function verifyProfessional(id: string, isVerified: boolean): Promise<ProfessionalProfile> {
-  return prisma.professionalProfile.update({
-    where: { id },
-    data: { isVerified },
-  });
-}
-
-// Get professionals with filters and pagination
-export async function getProfessionals(query: z.infer<typeof GetProfessionalsQuerySchema>): Promise<{
-  professionals: any[];
-  total: number;
-}> {
-  const {
-    page,
-    limit,
-    specialty,
-    minRating,
-    maxHourlyRate,
-    minExperience,
-    isVerified,
-    search,
-    locationLat,
-    locationLng,
-    radius,
-    sortBy = 'recent',
-    sortDirection = 'desc',
-  } = query;
-
-  const where: Prisma.ProfessionalProfileWhereInput = {};
-
-  // Specialty filter
-  if (specialty) {
-    where.specialties = { has: specialty };
-  }
-
-  // Rating filter
-  if (minRating !== undefined) {
-    where.ratingAvg = { gte: minRating };
-  }
-
-  // Hourly rate filter
-  if (maxHourlyRate !== undefined) {
-    where.hourlyRate = { lte: maxHourlyRate };
-  }
-
-  // Experience filter
-  if (minExperience !== undefined) {
-    where.yearsOfExperience = { gte: minExperience };
-  }
-
-  // Verification filter
-  if (isVerified !== undefined) {
-    where.isVerified = isVerified;
-  }
-
-  // Search filter
-  const userWhere: Prisma.UserWhereInput = {};
-  if (search) {
-    userWhere.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { email: { contains: search, mode: 'insensitive' } },
-    ];
-  }
-
-  // Location filter
-  if (locationLat && locationLng && radius) {
-    const latOffset = radius / 111.0;
-    const lngOffset = radius / (111.0 * Math.cos(locationLat * Math.PI / 180.0));
-    
-    userWhere.locationLat = { 
-      gte: locationLat - latOffset,
-      lte: locationLat + latOffset,
-    };
-    userWhere.locationLng = {
-      gte: locationLng - lngOffset,
-      lte: locationLng + lngOffset,
-    };
-  }
-  
-  if (Object.keys(userWhere).length > 0) {
-    where.user = userWhere;
-  }
-
-  // Sort
-  let orderBy: any = { createdAt: 'desc' };
-  if (sortBy === 'rating') {
-    orderBy = { ratingAvg: sortDirection };
-  } else if (sortBy === 'experience') {
-    orderBy = { yearsOfExperience: sortDirection };
-  } else if (sortBy === 'hourlyRate') {
-    orderBy = { hourlyRate: sortDirection };
-  } else if (sortBy === 'recent') {
-    orderBy = { createdAt: sortDirection };
-  }
-
-  const professionals = await prisma.professionalProfile.findMany({
-    where,
-    skip: (page - 1) * limit,
-    take: limit,
-    orderBy: sortBy === 'quality' ? undefined : orderBy,
     include: {
       user: {
         select: {
@@ -203,243 +71,423 @@ export async function getProfessionals(query: z.infer<typeof GetProfessionalsQue
           locationAddress: true,
         },
       },
+      servicesOffered: true,
       reviews: true,
     },
   });
-  
-  const total = await prisma.professionalProfile.count({ where });
-  
-  if (sortBy === 'quality' && locationLat && locationLng) {
-    professionals.sort((a, b) => {
-      const scoreA = calculateQualityScore(a, locationLat, locationLng);
-      const scoreB = calculateQualityScore(b, locationLat, locationLng);
-      return sortDirection === 'desc' ? scoreB - scoreA : scoreA - scoreB;
-    });
+}
+
+// Get professionals with filters and pagination
+export async function getProfessionals(query: z.infer<typeof GetProfessionalsQuerySchema>): Promise<{
+  professionals: any[];
+  total: number;
+}> {
+  const { page, limit, specialty, minRating, maxHourlyRate, minExperience, isVerified, search, locationLat, locationLng, radius, sortBy, sortDirection } = query;
+
+  const where: Prisma.ProfessionalProfileWhereInput = {};
+
+  if (specialty) {
+    where.specialties = { has: specialty };
   }
+
+  if (minRating !== undefined) {
+    where.reviews = {
+      some: {
+        rating: { gte: minRating }
+      }
+    };
+  }
+
+  if (maxHourlyRate !== undefined) {
+    where.hourlyRate = { lte: maxHourlyRate };
+  }
+
+  if (minExperience !== undefined) {
+    where.yearsOfExperience = { gte: minExperience };
+  }
+
+  if (isVerified !== undefined) {
+    where.user = {
+      isVerified: isVerified
+    };
+  }
+
+  if (search) {
+    where.OR = [
+      { bio: { contains: search, mode: 'insensitive' } },
+      { specialties: { has: search } },
+      { user: { name: { contains: search, mode: 'insensitive' } } },
+    ];
+  }
+
+  if (locationLat !== undefined && locationLng !== undefined && radius !== undefined) {
+    // This would need a more complex query for geospatial search
+    // For now, we'll just include all professionals
+  }
+
+  const orderBy: Prisma.ProfessionalProfileOrderByWithRelationInput = {};
+  if (sortBy === 'rating') {
+    orderBy.reviews = { _count: sortDirection || 'desc' };
+  } else if (sortBy === 'experience') {
+    orderBy.yearsOfExperience = sortDirection || 'desc';
+  } else if (sortBy === 'hourlyRate') {
+    orderBy.hourlyRate = sortDirection || 'asc';
+  } else {
+    orderBy.createdAt = sortDirection || 'desc';
+  }
+
+  const [professionals, total] = await Promise.all([
+    prisma.professionalProfile.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy,
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            phone: true,
+            name: true,
+            role: true,
+            isVerified: true,
+            createdAt: true,
+            locationLat: true,
+            locationLng: true,
+            locationAddress: true,
+          },
+        },
+        servicesOffered: true,
+        reviews: {
+          select: {
+            id: true,
+            rating: true,
+            comment: true,
+            createdAt: true,
+          },
+        },
+      },
+    }),
+    prisma.professionalProfile.count({ where }),
+  ]);
 
   return { professionals, total };
 }
 
-function calculateQualityScore(professional: any, clientLat: number, clientLng: number): number {
-  const { ratingAvg, yearsOfExperience, user } = professional;
-  
-  const rating = ratingAvg ?? 0;
-  const experience = yearsOfExperience ?? 0;
-  
-  let distance = Infinity;
-  if (user?.locationLat && user?.locationLng) {
-    distance = getDistance(clientLat, clientLng, user.locationLat, user.locationLng);
-  }
-
-  // Weights can be adjusted
-  const ratingWeight = 0.5;
-  const experienceWeight = 0.2;
-  const distanceWeight = 0.3;
-
-  // Normalize distance: closer is better. Assuming max distance of 100km for normalization.
-  const normalizedDistance = Math.max(0, 1 - (distance / 100));
-
-  // Rating is 0-5, experience can be anything, so we can cap it or normalize it.
-  // For simplicity, let's use them directly but this can be improved.
-  const score = (rating * ratingWeight) + (experience * experienceWeight) + (normalizedDistance * distanceWeight);
-  
-  return score;
+// Update professional profile
+export async function updateProfessionalProfile(id: string, data: {
+  bio?: string;
+  yearsOfExperience?: number;
+  certifications?: string;
+  specialties?: string[];
+  hourlyRate?: number;
+  bankAccount?: string;
+  taxId?: string;
+}): Promise<ProfessionalProfile> {
+  return prisma.professionalProfile.update({
+    where: { id },
+    data,
+  });
 }
 
-function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const R = 6371; // Radius of the earth in km
-  const dLat = deg2rad(lat2-lat1);
-  const dLon = deg2rad(lon2-lon1); 
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2)
-    ; 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  const d = R * c; // Distance in km
-  return d;
+// Delete professional profile
+export async function deleteProfessionalProfile(id: string): Promise<ProfessionalProfile> {
+  return prisma.professionalProfile.delete({
+    where: { id },
+  });
 }
 
-function deg2rad(deg: number) {
-  return deg * (Math.PI/180)
+// Professional Portfolio Functions (Placeholder - models not available)
+export async function getProfessionalPortfolios(professionalId: string) {
+  return [];
 }
 
+export async function getProfessionalPortfolioById(id: string) {
+  return null;
+}
 
-// Get top-rated professionals
-export async function getTopRatedProfessionals(limit: number = 10): Promise<any[]> {
-  return prisma.professionalProfile.findMany({
-    where: { isVerified: true },
+export async function createProfessionalPortfolio(data: {
+  professionalId: string;
+  title: string;
+  description?: string;
+  category: string;
+  images?: string[];
+  videos?: string[];
+  tags?: string[];
+}) {
+  return null;
+}
+
+export async function updateProfessionalPortfolio(id: string, data: {
+  title?: string;
+  description?: string;
+  category?: string;
+  images?: string[];
+  videos?: string[];
+  tags?: string[];
+}) {
+  return null;
+}
+
+export async function deleteProfessionalPortfolio(id: string) {
+  return null;
+}
+
+// Professional Notification Functions (Placeholder - using general Notification model)
+export async function getProfessionalNotifications(professionalId: string, limit?: number) {
+  return prisma.notification.findMany({
+    where: { userId: professionalId },
+    orderBy: { createdAt: 'desc' },
     take: limit,
-    orderBy: { rating: 'desc' },
-    include: {
-      user: true,
-      reviews: true,
+  });
+}
+
+export async function getProfessionalUnreadNotificationsCount(professionalId: string) {
+  return prisma.notification.count({
+    where: { 
+      userId: professionalId,
+      read: false 
     },
   });
 }
 
-// Get professionals by specialty
-export async function getProfessionalsBySpecialty(specialty: string): Promise<any[]> {
-  return prisma.professionalProfile.findMany({
-    where: {
-      specialties: { has: specialty },
-      isVerified: true,
+export async function markProfessionalNotificationAsRead(id: string) {
+  return prisma.notification.update({
+    where: { id },
+    data: { read: true },
+  });
+}
+
+export async function markAllProfessionalNotificationsAsRead(professionalId: string) {
+  return prisma.notification.updateMany({
+    where: { 
+      userId: professionalId,
+      read: false 
     },
-    orderBy: { rating: 'desc' },
-    include: {
-      user: true,
-      reviews: true,
+    data: { read: true },
+  });
+}
+
+export async function createProfessionalNotification(data: {
+  professionalId: string;
+  title: string;
+  message: string;
+  type: string;
+  metadata?: any;
+}) {
+  return prisma.notification.create({
+    data: {
+      userId: data.professionalId,
+      title: data.title,
+      body: data.message,
+      data: data.metadata,
     },
   });
 }
 
-// Get professionals by location
-export async function getProfessionalsByLocation(lat: number, lng: number, radius: number): Promise<any[]> {
-  return prisma.professionalProfile.findMany({
-    where: {
-      isVerified: true,
-      user: {
-        locationLat: { gte: lat - (radius / 111), lte: lat + (radius / 111) },
-        locationLng: { gte: lng - (radius / 111), lte: lng + (radius / 111) },
-      },
-    },
-    orderBy: { rating: 'desc' },
-    include: {
-      user: true,
-      reviews: true,
-    },
-  });
-}
-
-// Search professionals
-export async function searchProfessionals(searchTerm: string): Promise<any[]> {
-  return prisma.professionalProfile.findMany({
-    where: {
-      isVerified: true,
-      user: {
-        OR: [
-          { name: { contains: searchTerm, mode: 'insensitive' } },
-          { email: { contains: searchTerm, mode: 'insensitive' } },
-        ],
-      },
-    },
-    orderBy: { rating: 'desc' },
-    include: {
-      user: true,
-      reviews: true,
-    },
-  });
-}
-
-// Get professional statistics
-export async function getProfessionalStats(professionalId: string): Promise<{
-  totalClients: number;
-  totalCompletedServices: number;
-  totalEarnings: number;
-  averageRating: number;
-  totalReviews: number;
-  successRate: number;
-}> {
-  const [transactions, reviews, payments] = await Promise.all([
-    prisma.serviceTransaction.findMany({
-      where: { professionalId },
+// Professional Stats Functions
+export async function getProfessionalDashboardStats(professionalId: string) {
+  const [
+    totalJobs,
+    completedJobs,
+    pendingJobs,
+    totalEarnings,
+    averageRating,
+    portfolioItems,
+    reviews,
+  ] = await Promise.all([
+    prisma.job_postings.count({
+      where: { clientId: professionalId },
     }),
-    prisma.review.findMany({
-      where: { reviewedId: (await prisma.professionalProfile.findUnique({ where: { id: professionalId } }))?.userId },
+    prisma.job_postings.count({
+      where: { 
+        clientId: professionalId,
+        status: 'COMPLETED'
+      },
     }),
-    prisma.payment.findMany({
-      where: { recipientId: (await prisma.professionalProfile.findUnique({ where: { id: professionalId } }))?.userId },
+    prisma.job_postings.count({
+      where: { 
+        clientId: professionalId,
+        status: 'OPEN'
+      },
+    }),
+    prisma.job_postings.aggregate({
+      where: { 
+        clientId: professionalId,
+        status: 'COMPLETED'
+      },
+      _sum: { budget: true },
+    }),
+    prisma.review.aggregate({
+      where: { professionalProfileId: professionalId },
+      _avg: { rating: true },
+    }),
+    0, // Portfolio items count - placeholder
+    prisma.review.count({
+      where: { professionalProfileId: professionalId },
     }),
   ]);
 
-  const completedTransactions = transactions.filter(t => t.status === 'COMPLETED');
-  const totalClients = new Set(transactions.map(t => t.clientId)).size;
-  const totalEarnings = payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
-  const averageRating = reviews.length > 0
-    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-    : 0;
-  const successRate = transactions.length > 0
-    ? (completedTransactions.length / transactions.length) * 100
-    : 0;
-
   return {
-    totalClients,
-    totalCompletedServices: completedTransactions.length,
-    totalEarnings,
-    averageRating,
-    totalReviews: reviews.length,
-    successRate,
+    totalJobs,
+    completedJobs,
+    pendingJobs,
+    totalEarnings: totalEarnings._sum?.budget || 0,
+    averageRating: averageRating._avg?.rating || 0,
+    totalReviews: reviews,
+    portfolioItems,
   };
 }
 
-// Delete professional (soft delete)
-export async function deleteProfessional(id: string): Promise<ProfessionalProfile> {
+export async function getProfessionalCalendarStats(professionalId: string, month?: string) {
+  // Simplified implementation - in a real app, you'd query actual job schedules
+  return {
+    upcomingJobs: [],
+    completedJobs: [],
+    totalJobs: 0,
+    completionRate: 0,
+  };
+}
+
+export async function getProfessionalEarningsStats(professionalId: string, period?: string) {
+  const [monthlyEarnings, totalEarnings] = await Promise.all([
+    prisma.job_postings.aggregate({
+      where: { 
+        clientId: professionalId,
+        status: 'COMPLETED'
+      },
+      _sum: { budget: true },
+    }),
+    prisma.job_postings.aggregate({
+      where: { 
+        clientId: professionalId,
+        status: 'COMPLETED'
+      },
+      _sum: { budget: true },
+    }),
+  ]);
+
+  return {
+    monthlyEarnings: monthlyEarnings._sum?.budget || 0,
+    totalEarnings: totalEarnings._sum?.budget || 0,
+    earningsByMonth: [],
+  };
+}
+
+export async function getProfessionalReviewsStats(professionalId: string) {
+  const [reviews, averageRating, ratingDistribution] = await Promise.all([
+    prisma.review.findMany({
+      where: { professionalProfileId: professionalId },
+      include: {
+        reviewer: {
+          select: { name: true, email: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.review.aggregate({
+      where: { professionalProfileId: professionalId },
+      _avg: { rating: true },
+    }),
+    prisma.review.groupBy({
+      by: ['rating'],
+      where: { professionalProfileId: professionalId },
+      _count: { rating: true },
+      orderBy: { rating: 'asc' },
+    }),
+  ]);
+
+  return {
+    reviews: reviews.map(review => ({
+      id: review.id,
+      rating: review.rating,
+      comment: review.comment,
+      clientName: review.reviewer.name || 'Cliente',
+      createdAt: review.createdAt.toISOString(),
+    })),
+    averageRating: averageRating._avg?.rating || 0,
+    totalReviews: reviews.length,
+    ratingDistribution: ratingDistribution.map(item => ({
+      rating: item.rating,
+      count: item._count,
+    })),
+  };
+}
+
+// Professional Settings Functions
+export async function getProfessionalSettings(professionalId: string) {
+  return prisma.professionalProfile.findUnique({
+    where: { id: professionalId },
+    select: {
+      id: true,
+      userId: true,
+      bio: true,
+      yearsOfExperience: true,
+      certifications: true,
+      specialties: true,
+      hourlyRate: true,
+      bankAccount: true,
+      taxId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+}
+
+export async function updateProfessionalSettings(professionalId: string, data: {
+  bio?: string;
+  yearsOfExperience?: number;
+  certifications?: string;
+  specialties?: string[];
+  hourlyRate?: number;
+  bankAccount?: string;
+  taxId?: string;
+}) {
   return prisma.professionalProfile.update({
-    where: { id },
-    data: { deletedAt: new Date() },
+    where: { id: professionalId },
+    data,
   });
 }
 
-// Get professional count
-export async function getProfessionalCount(): Promise<number> {
-  return prisma.professionalProfile.count({ where: { isVerified: true } });
-}
-
-// Get verified professionals
-export async function getVerifiedProfessionals(): Promise<any[]> {
-  return prisma.professionalProfile.findMany({
-    where: { isVerified: true },
-    orderBy: { rating: 'desc' },
-    include: {
-      user: true,
-      reviews: true,
-    },
-  });
-}
-
-// Get professionals with low response time
-export async function getFastResponseProfessionals(maxResponseTime: number = 24): Promise<any[]> {
+// Search professionals function
+export async function searchProfessionals(query: string) {
   return prisma.professionalProfile.findMany({
     where: {
-      isVerified: true,
-      responseTime: { lte: maxResponseTime },
+      OR: [
+        { bio: { contains: query, mode: 'insensitive' } },
+        { specialties: { has: query } },
+        { user: { name: { contains: query, mode: 'insensitive' } } },
+      ],
     },
-    orderBy: { rating: 'desc' },
     include: {
-      user: true,
-      reviews: true,
-    },
-  });
-}
-
-// Get professionals available for booking
-export async function getAvailableProfessionals(): Promise<any[]> {
-  return prisma.professionalProfile.findMany({
-    where: { isVerified: true },
-    orderBy: { rating: 'desc' },
-    include: {
-      user: true,
-      servicesOffered: true,
-      reviews: true,
-    },
-  });
-}
-
-// Get professional by email or phone
-export async function getProfessionalByIdentifier(identifier: string): Promise<any> {
-  return prisma.professionalProfile.findFirst({
-    where: {
       user: {
-        OR: [
-          { email: identifier },
-          { phone: identifier },
-        ],
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          name: true,
+          role: true,
+          isVerified: true,
+          createdAt: true,
+          locationLat: true,
+          locationLng: true,
+          locationAddress: true,
+        },
+      },
+      servicesOffered: true,
+      reviews: {
+        select: {
+          id: true,
+          rating: true,
+          comment: true,
+          createdAt: true,
+        },
       },
     },
-    include: {
-      user: true,
-      servicesOffered: true,
-      reviews: true,
-    },
   });
+}
+
+// Get professional stats function
+export async function getProfessionalStats(professionalId: string) {
+  return getProfessionalDashboardStats(professionalId);
 }

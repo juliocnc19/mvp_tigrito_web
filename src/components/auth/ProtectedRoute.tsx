@@ -15,11 +15,11 @@ export function ProtectedRoute({
   requiredRole, 
   fallbackPath = '/login' 
 }: ProtectedRouteProps) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isInitialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading) {
+    if (isInitialized && !isLoading) {
       // Check if user is authenticated
       if (!user) {
         router.push(fallbackPath);
@@ -28,23 +28,15 @@ export function ProtectedRoute({
 
       // Check if user has required role
       if (requiredRole && user.role !== requiredRole) {
-        // Redirect based on user role
-        if (user.role === 'ADMIN') {
-          router.push('/admin');
-        } else if (user.role === 'CLIENT') {
-          router.push('/dashboard');
-        } else if (user.role === 'PROFESSIONAL') {
-          router.push('/dashboard');
-        } else {
-          router.push(fallbackPath);
-        }
+        // Simple redirect to login for wrong role
+        router.push('/login');
         return;
       }
     }
-  }, [user, requiredRole, isLoading, router, fallbackPath]);
+  }, [user, requiredRole, isLoading, isInitialized, router, fallbackPath]);
 
-  // Show loading while checking authentication
-  if (isLoading) {
+  // Show loading while initializing auth
+  if (isLoading || !isInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>

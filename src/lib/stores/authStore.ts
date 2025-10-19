@@ -46,22 +46,30 @@ export const useAuthStore = create<AuthState>()(
         });
         localStorage.removeItem('authToken');
         localStorage.removeItem('authUser');
+        // Redirect to login page after logout
+        window.location.href = '/login';
       },
 
       // Initialize auth state from localStorage
       initialize: () => {
+        console.log('🔐 [authStore] Starting initialization...');
         const savedToken = localStorage.getItem('authToken');
         const savedUser = localStorage.getItem('authUser');
+
+        console.log('🔐 [authStore] Saved token:', savedToken ? 'Present' : 'Not found');
+        console.log('🔐 [authStore] Saved user:', savedUser ? 'Present' : 'Not found');
 
         if (savedToken && savedUser) {
           try {
             const user = JSON.parse(savedUser);
+            console.log('🔐 [authStore] Parsed user:', user);
             set({
               user,
               token: savedToken,
               isLoading: false,
               isInitialized: true
             });
+            console.log('🔐 [authStore] Auth state initialized with user');
           } catch (err) {
             console.error('Failed to parse saved auth data:', err);
             localStorage.removeItem('authToken');
@@ -72,12 +80,14 @@ export const useAuthStore = create<AuthState>()(
               isLoading: false,
               isInitialized: true
             });
+            console.log('🔐 [authStore] Auth state initialized without user (parse error)');
           }
         } else {
           set({
             isLoading: false,
             isInitialized: true
           });
+          console.log('🔐 [authStore] Auth state initialized without user (no saved data)');
         }
       },
     }),
@@ -98,6 +108,8 @@ export const useAuthStore = create<AuthState>()(
 if (typeof window !== 'undefined') {
   // Run initialization on client side only
   setTimeout(() => {
-    useAuthStore.getState().initialize();
+    const store = useAuthStore.getState();
+    console.log('🔐 [authStore] Initializing auth state...');
+    store.initialize();
   }, 0);
 }

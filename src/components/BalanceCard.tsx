@@ -23,16 +23,16 @@ export function BalanceCard({
   });
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+    <div className="bg-card border border-border rounded-lg p-8 shadow-sm">
       <div className="mb-6">
-        <p className="text-sm text-gray-600 mb-1">Saldo Disponible</p>
-        <h2 className="text-4xl font-bold text-gray-900">
+        <p className="text-sm text-[var(--color-neutral-text-secondary)] mb-1">Saldo Disponible</p>
+        <h2 className="text-4xl font-bold text-[var(--color-neutral-text)]">
           {formattedBalance} {currency}
         </h2>
-        <p className="text-xs text-gray-500 mt-2">Actualizado hace unos momentos</p>
+        <p className="text-xs text-[var(--color-neutral-text-tertiary)] mt-2">Actualizado hace unos momentos</p>
       </div>
 
-      <div className="flex gap-3 pt-4 border-t border-gray-200">
+      <div className="flex gap-3 pt-4 border-t border-border">
         <Button
           variant="default"
           className="flex-1"

@@ -76,6 +76,38 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  
+  /* Colores de aplicación personalizados */
+  --color-sidebar-bg: oklch(0.145 0 0);           /* gray-900 */
+  --color-sidebar-hover: oklch(0.269 0 0);        /* gray-700 */
+  --color-sidebar-text: oklch(0.985 0 0);         /* white */
+  --color-sidebar-text-secondary: oklch(0.708 0 0); /* gray-300 */
+  --color-sidebar-border: oklch(0.269 0 0);       /* gray-700 */
+  
+  --color-brand-primary: oklch(0.488 0.243 264.376); /* blue-600 */
+  --color-brand-primary-hover: oklch(0.398 0.223 264.376); /* blue-700 */
+  
+  --color-success: oklch(0.696 0.17 162.48);      /* green-600 */
+  --color-success-light: oklch(0.969 0.034 162.48); /* green-50 */
+  --color-success-text: oklch(0.398 0.17 162.48); /* green-800 */
+  
+  --color-danger: oklch(0.704 0.191 22.216);      /* red-500 */
+  --color-danger-hover: oklch(0.398 0.191 22.216); /* red-900 */
+  --color-danger-light: oklch(0.969 0.038 22.216); /* red-50 */
+  --color-danger-text: oklch(0.498 0.191 22.216); /* red-400 */
+  
+  --color-warning-badge: oklch(0.769 0.188 70.08); /* yellow-500 */
+  
+  --color-neutral-bg: oklch(1 0 0);               /* white */
+  --color-neutral-surface: oklch(0.97 0 0);       /* gray-50 */
+  --color-neutral-border: oklch(0.922 0 0);       /* gray-200 */
+  --color-neutral-text: oklch(0.145 0 0);         /* gray-900 */
+  --color-neutral-text-secondary: oklch(0.556 0 0); /* gray-600 */
+  --color-neutral-text-tertiary: oklch(0.708 0 0); /* gray-500 */
+  
+  --color-skeleton: oklch(0.922 0 0);             /* gray-200 */
+  --color-skeleton-gradient-from: oklch(0.922 0 0); /* gray-200 */
+  --color-skeleton-gradient-to: oklch(0.856 0 0); /* gray-300 */
 }
 
 .dark {
@@ -110,6 +142,23 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  
+  /* Ajustes para modo oscuro */
+  --color-sidebar-bg: oklch(0.205 0 0);
+  --color-sidebar-hover: oklch(0.269 0 0);
+  --color-sidebar-text: oklch(0.985 0 0);
+  --color-sidebar-text-secondary: oklch(0.708 0 0);
+  --color-sidebar-border: oklch(1 0 0 / 10%);
+  
+  --color-brand-primary: oklch(0.488 0.243 264.376);
+  --color-brand-primary-hover: oklch(0.398 0.223 264.376);
+  
+  --color-neutral-bg: oklch(0.145 0 0);
+  --color-neutral-surface: oklch(0.205 0 0);
+  --color-neutral-border: oklch(1 0 0 / 10%);
+  --color-neutral-text: oklch(0.985 0 0);
+  --color-neutral-text-secondary: oklch(0.708 0 0);
+  --color-neutral-text-tertiary: oklch(0.556 0 0);
 }
 
 @layer base {

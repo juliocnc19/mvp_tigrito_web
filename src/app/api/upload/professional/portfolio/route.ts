@@ -4,246 +4,86 @@ import { optionalAuth } from '@/lib/auth/middleware';
 import { validateFileType, validateFileSize, generateUniqueFilename, getMediaTypeFromMimeType } from '@/lib/utils/file-upload';
 
 /**
- * Upload portfolio images for professional
- * @description Upload multiple images for professional portfolio
- * @response 201:MultipleFileUploadResponseSchema:Files uploaded successfully
+ * Upload professional portfolio item
+ * @description Upload a portfolio file for a professional
+ * @body FormData with file and metadata
+ * @response 200:FileUploadResponseSchema:Portfolio item uploaded successfully
  * @responseSet auth
  * @security BearerAuth
  * @openapi
  */
 export async function POST(request: NextRequest) {
   try {
-    // Get professionalId from query parameters
-    const professionalId = request.nextUrl.searchParams.get('professionalId');
-
-    if (!professionalId) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.VALIDATION_ERROR,
-          'professionalId query parameter is required'
-        ),
-        { status: 400 }
-      );
-    }
-
-    // Parse multipart form data
+    // Parse form data
     const formData = await request.formData();
-    const files = formData.getAll('files') as File[];
+    const file = formData.get('file') as File;
+    const professionalId = formData.get('professionalId') as string;
+    const portfolioItemId = formData.get('portfolioItemId') as string;
 
-    if (!files || files.length === 0) {
+    if (!file || !professionalId || !portfolioItemId) {
       return NextResponse.json(
         createErrorResponse(
           COMMON_ERROR_CODES.VALIDATION_ERROR,
-          'At least one file is required'
+          'File, professionalId, and portfolioItemId are required'
         ),
         { status: 400 }
       );
     }
 
-    if (files.length > 10) {
+    // Validate file type
+    const mediaType = getMediaTypeFromMimeType(file.type);
+    if (!mediaType || !validateFileType(file.type, mediaType)) {
       return NextResponse.json(
         createErrorResponse(
           COMMON_ERROR_CODES.VALIDATION_ERROR,
-          'Maximum 10 files allowed'
+          'Invalid file type. Only image and video files are allowed'
         ),
         { status: 400 }
       );
     }
 
-    // Validate and process each file
-    const uploadedFiles = [];
-    const errors = [];
-
-    for (const file of files) {
-      try {
-        // Validate file type
-        const mediaType = getMediaTypeFromMimeType(file.type);
-        if (!mediaType || mediaType !== 'IMAGE') {
-          errors.push(`File ${file.name}: Only image files are allowed`);
-          continue;
-        }
-
-        // Validate file size
-        if (!validateFileSize(file.size, mediaType)) {
-          errors.push(`File ${file.name}: File size exceeds limit (10MB for images)`);
-          continue;
-        }
-
-        // Generate unique filename
-        const uniqueFilename = generateUniqueFilename(file.name, professionalId);
-
-        // For now, simulate file upload - in production this would upload to cloud storage
-        // TODO: Implement actual cloud storage upload (AWS S3, Cloudinary, etc.)
-        const fileUrl = `https://storage.example.com/professional-portfolio/${uniqueFilename}`;
-
-        uploadedFiles.push({
-          fileUrl,
-          fileName: file.name,
-          fileSize: file.size,
-          fileType: file.type,
-          uploadedAt: new Date().toISOString(),
-        });
-
-      } catch (fileError) {
-        console.error('Error processing file:', file.name, fileError);
-        errors.push(`File ${file.name}: Processing failed`);
-      }
-    }
-
-    if (uploadedFiles.length === 0) {
+    // Validate file size
+    if (!validateFileSize(file.size, mediaType)) {
       return NextResponse.json(
         createErrorResponse(
           COMMON_ERROR_CODES.VALIDATION_ERROR,
-          'No valid files were uploaded',
-          errors
+          `File size exceeds limit for ${mediaType.toLowerCase()} files`
         ),
         { status: 400 }
       );
     }
+
+    // Generate unique filename
+    const uniqueFilename = generateUniqueFilename(file.name, professionalId);
+
+    // In a real implementation, you would save the file to storage
+    // For now, we'll just return success
+    const fileUrl = `/uploads/professional/portfolio/${professionalId}/${portfolioItemId}/${uniqueFilename}`;
 
     // Prepare response data
     const responseData = {
-      files: uploadedFiles,
+      fileUrl,
+      filename: uniqueFilename,
+      originalName: file.name,
+      size: file.size,
+      type: file.type,
+      mediaType,
+      professionalId,
+      portfolioItemId,
     };
 
     return NextResponse.json(
-      createSuccessResponse(responseData, `${uploadedFiles.length} files uploaded successfully`),
-      { status: 201 }
+      createSuccessResponse(responseData, 'Portfolio item uploaded successfully')
     );
 
   } catch (error) {
-    console.error('Portfolio upload error:', error);
+    console.error('Upload portfolio item error:', error);
     return NextResponse.json(
       createErrorResponse(
         COMMON_ERROR_CODES.INTERNAL_ERROR,
-        'Failed to upload portfolio files'
+        'Failed to upload portfolio item'
       ),
       { status: 500 }
     );
   }
 }
-import { createSuccessResponse, createErrorResponse, COMMON_ERROR_CODES } from '@/lib/utils/response';
-import { optionalAuth } from '@/lib/auth/middleware';
-import { validateFileType, validateFileSize, generateUniqueFilename, getMediaTypeFromMimeType } from '@/lib/utils/file-upload';
-
-/**
- * Upload portfolio images for professional
- * @description Upload multiple images for professional portfolio
- * @response 201:MultipleFileUploadResponseSchema:Files uploaded successfully
- * @responseSet auth
- * @security BearerAuth
- * @openapi
- */
-export async function POST(request: NextRequest) {
-  try {
-    // Get professionalId from query parameters
-    const professionalId = request.nextUrl.searchParams.get('professionalId');
-
-    if (!professionalId) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.VALIDATION_ERROR,
-          'professionalId query parameter is required'
-        ),
-        { status: 400 }
-      );
-    }
-
-    // Parse multipart form data
-    const formData = await request.formData();
-    const files = formData.getAll('files') as File[];
-
-    if (!files || files.length === 0) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.VALIDATION_ERROR,
-          'At least one file is required'
-        ),
-        { status: 400 }
-      );
-    }
-
-    if (files.length > 10) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.VALIDATION_ERROR,
-          'Maximum 10 files allowed'
-        ),
-        { status: 400 }
-      );
-    }
-
-    // Validate and process each file
-    const uploadedFiles = [];
-    const errors = [];
-
-    for (const file of files) {
-      try {
-        // Validate file type
-        const mediaType = getMediaTypeFromMimeType(file.type);
-        if (!mediaType || mediaType !== 'IMAGE') {
-          errors.push(`File ${file.name}: Only image files are allowed`);
-          continue;
-        }
-
-        // Validate file size
-        if (!validateFileSize(file.size, mediaType)) {
-          errors.push(`File ${file.name}: File size exceeds limit (10MB for images)`);
-          continue;
-        }
-
-        // Generate unique filename
-        const uniqueFilename = generateUniqueFilename(file.name, professionalId);
-
-        // For now, simulate file upload - in production this would upload to cloud storage
-        // TODO: Implement actual cloud storage upload (AWS S3, Cloudinary, etc.)
-        const fileUrl = `https://storage.example.com/professional-portfolio/${uniqueFilename}`;
-
-        uploadedFiles.push({
-          fileUrl,
-          fileName: file.name,
-          fileSize: file.size,
-          fileType: file.type,
-          uploadedAt: new Date().toISOString(),
-        });
-
-      } catch (fileError) {
-        console.error('Error processing file:', file.name, fileError);
-        errors.push(`File ${file.name}: Processing failed`);
-      }
-    }
-
-    if (uploadedFiles.length === 0) {
-      return NextResponse.json(
-        createErrorResponse(
-          COMMON_ERROR_CODES.VALIDATION_ERROR,
-          'No valid files were uploaded',
-          errors
-        ),
-        { status: 400 }
-      );
-    }
-
-    // Prepare response data
-    const responseData = {
-      files: uploadedFiles,
-    };
-
-    return NextResponse.json(
-      createSuccessResponse(responseData, `${uploadedFiles.length} files uploaded successfully`),
-      { status: 201 }
-    );
-
-  } catch (error) {
-    console.error('Portfolio upload error:', error);
-    return NextResponse.json(
-      createErrorResponse(
-        COMMON_ERROR_CODES.INTERNAL_ERROR,
-        'Failed to upload portfolio files'
-      ),
-      { status: 500 }
-    );
-  }
-}
-
-

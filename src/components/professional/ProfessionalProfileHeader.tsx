@@ -70,14 +70,14 @@ export function ProfessionalProfileHeader({
               </span>
             </div>
             {profile.isVerified && (
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[var(--color-success)] rounded-full flex items-center justify-center">
                 <CheckCircle className="h-4 w-4 text-white" />
               </div>
             )}
           </div>
 
           <div className="text-center lg:text-left">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            <h1 className="text-2xl font-bold text-[var(--color-neutral-text)] mb-1">
               {profile.name}
             </h1>
             <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">

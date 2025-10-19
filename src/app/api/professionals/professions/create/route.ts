@@ -9,8 +9,7 @@ import { createProfessionalProfessionLink, getProfessionalProfessionLinks } from
  * Create professional profession link
  * @description Create a new profession link for the authenticated professional
  * @body CreateProfessionalProfessionLinkRequestSchema
- * @response 201:ProfessionalProfessionLinkResponseSchema:Profession link created successfully
- * @add 409:Profession link already exists
+ * @response 200:ProfessionalProfessionLinkResponseSchema:Profession link created successfully
  * @responseSet auth
  * @security BearerAuth
  * @openapi
@@ -23,17 +22,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(validation.error, { status: 400 });
     }
 
-    const { userId, professionId, documents } = validation.data;
+    const { userId, professionId, documents } = validation.data as any;
 
     // Test 3: Validate profession link creation and uniqueness
     const existingLinks = await getProfessionalProfessionLinks(userId);
-    const existingLink = existingLinks.find(link => link.professionId === professionId);
+    const existingLink = existingLinks.find((link: any) => link.professionId === professionId);
 
     if (existingLink) {
       return NextResponse.json(
         createErrorResponse(
           COMMON_ERROR_CODES.CONFLICT,
-          'Profession link already exists for this professional'
+          'Professional already has this profession link'
         ),
         { status: 409 }
       );
@@ -41,27 +40,42 @@ export async function POST(request: NextRequest) {
 
     // Create profession link
     const professionLink = await createProfessionalProfessionLink({
-      userId,
+      professionalId: userId,
       professionId,
       documents,
     });
 
+    if (!professionLink) {
+      return NextResponse.json(
+        createErrorResponse(
+          COMMON_ERROR_CODES.INTERNAL_ERROR,
+          'Failed to create profession link'
+        ),
+        { status: 500 }
+      );
+    }
+
     // Prepare response data
     const responseData = {
-      professionLink,
+      id: professionLink.id,
+      professionalId: professionLink.userId,
+      professionId: professionLink.professionId,
+      documents: professionLink.documents || {},
+      verified: professionLink.verified || false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     return NextResponse.json(
-      createSuccessResponse(responseData, 'Professional profession link created successfully'),
-      { status: 201 }
+      createSuccessResponse(responseData, 'Profession link created successfully')
     );
 
   } catch (error) {
-    console.error('Create professional profession link error:', error);
+    console.error('Create profession link error:', error);
     return NextResponse.json(
       createErrorResponse(
         COMMON_ERROR_CODES.INTERNAL_ERROR,
-        'Failed to create professional profession link'
+        'Failed to create profession link'
       ),
       { status: 500 }
     );

@@ -69,3 +69,65 @@ export async function deleteProfession(id: string): Promise<Profession> {
     where: { id },
   });
 }
+
+// Get professional profession links
+export async function getProfessionalProfessionLinks(professionalId: string) {
+  return prisma.professionLink.findMany({
+    where: { userId: professionalId },
+    include: {
+      profession: true,
+    },
+    orderBy: { id: 'desc' },
+  });
+}
+
+// Get professional profession link by ID
+export async function getProfessionalProfessionLinkById(id: string) {
+  return prisma.professionLink.findUnique({
+    where: { id },
+    include: {
+      profession: true,
+    },
+  });
+}
+
+// Create professional profession link
+export async function createProfessionalProfessionLink(data: {
+  professionalId: string;
+  professionId: string;
+  documents?: any;
+}) {
+  return prisma.professionLink.create({
+    data: {
+      userId: data.professionalId,
+      professionId: data.professionId,
+      documents: data.documents || {},
+    },
+  });
+}
+
+// Update professional profession link
+export async function updateProfessionalProfessionLink(id: string, data: {
+  documents?: any;
+  verified?: boolean;
+}) {
+  return prisma.professionLink.update({
+    where: { id },
+    data,
+  });
+}
+
+// Delete professional profession link
+export async function deleteProfessionalProfessionLink(id: string) {
+  return prisma.professionLink.delete({
+    where: { id },
+  });
+}
+
+// Verify professional profession link
+export async function verifyProfessionalProfessionLink(id: string) {
+  return prisma.professionLink.update({
+    where: { id },
+    data: { verified: true },
+  });
+}

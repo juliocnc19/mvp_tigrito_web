@@ -23,7 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export function ProfessionalPortfolio() {
   const { user } = useAuth();
-  const { data: portfolio, isLoading, error } = useProfessionalPortfolio(user?.id);
+  const { data: portfolio, isLoading, error } = useProfessionalPortfolio(user?.id || '');
   const deletePortfolioMutation = useDeleteProfessionalPortfolio();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -31,7 +31,7 @@ export function ProfessionalPortfolio() {
 
   const categories = ['all', 'Plomería', 'Electricidad', 'Limpieza', 'Albañilería', 'Pintura'];
 
-  const filteredPortfolio = portfolio?.filter(item =>
+  const filteredPortfolio = portfolio?.filter((item: any) =>
     selectedCategory === 'all' || item.category === selectedCategory
   ) || [];
 
@@ -147,7 +147,7 @@ export function ProfessionalPortfolio() {
               </Button>
             </div>
           ) : (
-            filteredPortfolio.map((item) => (
+            filteredPortfolio.map((item: any) => (
               <Card key={item.id} className="hover:shadow-md transition-shadow duration-200">
                 <CardContent className="p-4">
                   <div className="flex gap-4">
@@ -280,7 +280,7 @@ export function ProfessionalPortfolio() {
             </Button>
           </div>
         ) : (
-          filteredPortfolio.map((item) => (
+          filteredPortfolio.map((item: any) => (
             <Card key={item.id} className="hover:shadow-md transition-shadow duration-200">
               <CardHeader className="pb-3">
                 <div className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center mb-3">

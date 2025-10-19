@@ -40,3 +40,33 @@ export const ProfessionsListResponseSchema = z.object({
   professions: z.array(ProfessionSchema),
   total: z.number(),
 });
+
+// Professional Profession Link Schemas
+export const ProfessionalProfessionLinkSchema = z.object({
+  id: z.string(),
+  professionalId: z.string(),
+  professionId: z.string(),
+  documents: z.record(z.string(), z.any()).nullable(),
+  verified: z.boolean().default(false),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export const CreateProfessionalProfessionLinkRequestSchema = z.object({
+  userId: z.string(),
+  professionId: z.string(),
+  documents: z.record(z.string(), z.any()).optional(),
+});
+
+export const UpdateProfessionalProfessionLinkRequestSchema = z.object({
+  documents: z.record(z.string(), z.any()).optional(),
+  verified: z.boolean().optional(),
+});
+
+export const ProfessionalProfessionLinkResponseSchema = z.object({
+  professionLink: ProfessionalProfessionLinkSchema,
+});
+
+export const ProfessionalProfessionLinksListResponseSchema = z.object({
+  professionLinks: z.array(ProfessionalProfessionLinkSchema),
+});

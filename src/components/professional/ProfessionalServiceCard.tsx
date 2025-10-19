@@ -83,7 +83,7 @@ export function ProfessionalServiceCard({
           <div className="flex items-center justify-between">
             <div className="flex-1 flex items-center gap-4">
               {/* Service Image */}
-              <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+              <div className="w-16 h-16 bg-[var(--color-skeleton)] rounded-lg flex items-center justify-center">
                 {service.media.length > 0 ? (
                   <img 
                     src={service.media[0]} 
@@ -91,21 +91,21 @@ export function ProfessionalServiceCard({
                     className="w-full h-full object-cover rounded-lg"
                   />
                 ) : (
-                  <div className="text-gray-400 text-2xl">🔧</div>
+                  <div className="text-muted-foreground text-2xl">🔧</div>
                 )}
               </div>
 
               {/* Service Info */}
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-[var(--color-neutral-text)]">
                     {service.title}
                   </h3>
                   <Badge variant={service.isActive ? 'default' : 'secondary'}>
                     {service.isActive ? 'Activo' : 'Inactivo'}
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-600 line-clamp-1 mb-2">
+                <p className="text-sm text-[var(--color-neutral-text-secondary)] line-clamp-1 mb-2">
                   {service.description}
                 </p>
                 <div className="flex items-center gap-4 text-sm text-gray-500">

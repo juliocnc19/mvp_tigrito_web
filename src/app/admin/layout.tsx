@@ -3,37 +3,40 @@
 import { useAuth } from '@/hooks/useAuth';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, Menu, X } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading, isInitialized } = useAuth();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  if (!user || user.role !== 'ADMIN') {
+  // Wait for auth initialization before checking authentication
+  useEffect(() => {
+    if (isInitialized && !isLoading) {
+      if (!user || user.role !== 'ADMIN') {
+        router.push('/login');
+      }
+    }
+  }, [user, router, isInitialized, isLoading]);
+
+  // Show loading while initializing auth
+  if (isLoading || !isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center text-red-600">Acceso Denegado</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-gray-600 mb-4">
-              No tienes permisos para acceder a esta página.
-            </p>
-            <Link href="/login">
-              <Button variant="outline">Ir al Login</Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
+  }
+
+  // Don't render anything if not authenticated or not admin
+  if (!user || user.role !== 'ADMIN') {
+    return null;
   }
 
   return (

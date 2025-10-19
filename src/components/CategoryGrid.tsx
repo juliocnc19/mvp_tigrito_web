@@ -49,7 +49,7 @@ export function CategoryGrid({
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="bg-gray-200 rounded-lg p-6 h-28 animate-pulse"
+            className="bg-[var(--color-skeleton)] rounded-lg p-6 h-28 animate-pulse"
           ></div>
         ))}
       </div>
@@ -68,7 +68,7 @@ export function CategoryGrid({
             variant="outline"
             className="w-full h-auto flex flex-col items-center justify-center p-6 gap-2 hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
           >
-            <Wrench className="w-8 h-8 text-gray-600" />
+            <Wrench className="w-8 h-8 text-[var(--color-neutral-text-secondary)]" />
             <span className="font-semibold">{category.name}</span>
             
           </Button>

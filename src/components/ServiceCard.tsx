@@ -33,10 +33,10 @@ export function ServiceCard({
 }: ServiceCardProps) {
   return (
     <Link href={`/services/${id}`}>
-      <div className="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
+      <div className="bg-card border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
         {/* Image Placeholder */}
-        <div className="bg-gradient-to-br from-gray-200 to-gray-300 h-40 w-full flex items-center justify-center">
-          <Package className="w-12 h-12 text-gray-400" />
+        <div className="bg-gradient-to-br from-[var(--color-skeleton-gradient-from)] to-[var(--color-skeleton-gradient-to)] h-40 w-full flex items-center justify-center">
+          <Package className="w-12 h-12 text-muted-foreground" />
         </div>
 
         {/* Content */}
@@ -52,19 +52,19 @@ export function ServiceCard({
           </div>
 
           {/* Category */}
-          <p className="text-sm text-gray-600 mb-2">{category}</p>
+          <p className="text-sm text-[var(--color-neutral-text-secondary)] mb-2">{category}</p>
 
           {/* Description */}
           {description && (
-            <p className="text-xs text-gray-500 line-clamp-2 mb-3">{description}</p>
+            <p className="text-xs text-[var(--color-neutral-text-tertiary)] line-clamp-2 mb-3">{description}</p>
           )}
 
           {/* Rating and Reviews */}
           <div className="flex items-center gap-1 mb-3 text-xs">
-            <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+            <Star className="w-4 h-4 fill-[var(--color-warning-badge)] text-[var(--color-warning-badge)]" />
             <span className="font-semibold">{rating.toFixed(1)}</span>
             {reviewCount > 0 && (
-              <span className="text-gray-600">({reviewCount} reseñas)</span>
+              <span className="text-[var(--color-neutral-text-secondary)]">({reviewCount} reseñas)</span>
             )}
           </div>
 
@@ -82,7 +82,7 @@ export function ServiceCard({
               ) : null}
             </div>
             {distance && (
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-[var(--color-neutral-text-secondary)]">
                 {distance < 1 ? '< 1 km' : `${distance.toFixed(1)} km`}
               </p>
             )}

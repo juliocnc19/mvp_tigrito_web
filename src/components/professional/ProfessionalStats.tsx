@@ -22,8 +22,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 export function ProfessionalStats() {
   const { user } = useAuth();
-  const { data: dashboardStats, isLoading: dashboardLoading, error: dashboardError } = useProfessionalDashboardStats(user?.id);
-  const { data: earningsStats, isLoading: earningsLoading, error: earningsError } = useProfessionalEarningsStats(user?.id);
+  const { data: dashboardStats, isLoading: dashboardLoading, error: dashboardError } = useProfessionalDashboardStats(user?.id || '');
+  const { data: earningsStats, isLoading: earningsLoading, error: earningsError } = useProfessionalEarningsStats(user?.id || '');
 
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('es-VE', {
@@ -34,17 +34,17 @@ export function ProfessionalStats() {
   };
 
   const getCompletionRateColor = (rate: number | undefined) => {
-    if (!rate) return 'text-gray-600';
-    if (rate >= 90) return 'text-green-600';
-    if (rate >= 80) return 'text-yellow-600';
-    return 'text-red-600';
+    if (!rate) return 'text-[var(--color-neutral-text-secondary)]';
+    if (rate >= 90) return 'text-[var(--color-success)]';
+    if (rate >= 80) return 'text-[var(--color-warning-badge)]';
+    return 'text-destructive';
   };
 
   const getRatingColor = (rating: number | undefined) => {
-    if (!rating) return 'text-gray-600';
-    if (rating >= 4.5) return 'text-green-600';
-    if (rating >= 4.0) return 'text-yellow-600';
-    return 'text-red-600';
+    if (!rating) return 'text-[var(--color-neutral-text-secondary)]';
+    if (rating >= 4.5) return 'text-[var(--color-success)]';
+    if (rating >= 4.0) return 'text-[var(--color-warning-badge)]';
+    return 'text-destructive';
   };
 
   // Show loading state
@@ -77,9 +77,9 @@ export function ProfessionalStats() {
   // Show error state
   if (dashboardError || earningsError) {
     return (
-      <Alert className="border-red-200 bg-red-50">
-        <AlertCircle className="h-4 w-4 text-red-600" />
-        <AlertDescription className="text-red-800">
+      <Alert className="border-destructive/20 bg-[var(--color-danger-light)]">
+        <AlertCircle className="h-4 w-4 text-destructive" />
+        <AlertDescription className="text-[var(--color-danger-text)]">
           Error al cargar las estadísticas. Por favor, intenta de nuevo más tarde.
         </AlertDescription>
       </Alert>
@@ -94,7 +94,7 @@ export function ProfessionalStats() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold mb-2">Estadísticas de Rendimiento</h2>
-        <p className="text-gray-600">Resumen de tu actividad profesional en la plataforma</p>
+        <p className="text-[var(--color-neutral-text-secondary)]">Resumen de tu actividad profesional en la plataforma</p>
       </div>
 
       {/* Main Stats Grid */}
@@ -115,10 +115,10 @@ export function ProfessionalStats() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completados</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <CheckCircle className="h-4 w-4 text-[var(--color-success)]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{dashboardStats?.completedJobs}</div>
+            <div className="text-2xl font-bold text-[var(--color-success)]">{dashboardStats?.completedJobs}</div>
             <p className="text-xs text-muted-foreground">
               {dashboardStats?.completionRate}% de finalización
             </p>
@@ -128,10 +128,10 @@ export function ProfessionalStats() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ganancias Totales</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
+            <DollarSign className="h-4 w-4 text-[var(--color-success)]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-[var(--color-success)]">
               {formatPrice(dashboardStats?.totalEarnings || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -143,7 +143,7 @@ export function ProfessionalStats() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Calificación Promedio</CardTitle>
-            <Star className="h-4 w-4 text-yellow-500" />
+            <Star className="h-4 w-4 text-[var(--color-warning-badge)]" />
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${getRatingColor(dashboardStats?.averageRating)}`}>
@@ -169,9 +169,9 @@ export function ProfessionalStats() {
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Tasa de Finalización</span>
               <div className="flex items-center gap-2">
-                <div className="w-20 bg-gray-200 rounded-full h-2">
+                <div className="w-20 bg-[var(--color-skeleton)] rounded-full h-2">
                   <div 
-                    className="bg-green-500 h-2 rounded-full" 
+                    className="bg-[var(--color-success)] h-2 rounded-full" 
                     style={{ width: `${dashboardStats?.completionRate}%` }}
                   ></div>
                 </div>
@@ -183,7 +183,7 @@ export function ProfessionalStats() {
 
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Tiempo de Respuesta</span>
-              <span className="text-sm font-medium text-blue-600">{stats?.responseTime || 0} horas</span>
+              <span className="text-sm font-medium text-[var(--color-brand-primary)]">{stats?.responseTime || 0} horas</span>
             </div>
 
             <div className="flex items-center justify-between">
@@ -193,7 +193,7 @@ export function ProfessionalStats() {
 
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Trabajos Cancelados</span>
-              <span className="text-sm font-medium text-red-600">{dashboardStats?.cancelledJobs}</span>
+              <span className="text-sm font-medium text-destructive">{dashboardStats?.cancelledJobs}</span>
             </div>
           </CardContent>
         </Card>
@@ -209,32 +209,32 @@ export function ProfessionalStats() {
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Último mes</span>
               <div className="text-right">
-                <div className="text-sm font-medium text-green-600">+12 trabajos</div>
-                <div className="text-xs text-gray-500">vs mes anterior</div>
+                <div className="text-sm font-medium text-[var(--color-success)]">+12 trabajos</div>
+                <div className="text-xs text-[var(--color-neutral-text-tertiary)]">vs mes anterior</div>
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Ganancias mensuales</span>
               <div className="text-right">
-                <div className="text-sm font-medium text-green-600">+15%</div>
-                <div className="text-xs text-gray-500">vs mes anterior</div>
+                <div className="text-sm font-medium text-[var(--color-success)]">+15%</div>
+                <div className="text-xs text-[var(--color-neutral-text-tertiary)]">vs mes anterior</div>
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Calificación promedio</span>
               <div className="text-right">
-                <div className="text-sm font-medium text-green-600">+0.2</div>
-                <div className="text-xs text-gray-500">vs mes anterior</div>
+                <div className="text-sm font-medium text-[var(--color-success)]">+0.2</div>
+                <div className="text-xs text-[var(--color-neutral-text-tertiary)]">vs mes anterior</div>
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Tiempo de respuesta</span>
               <div className="text-right">
-                <div className="text-sm font-medium text-green-600">-30 min</div>
-                <div className="text-xs text-gray-500">vs mes anterior</div>
+                <div className="text-sm font-medium text-[var(--color-success)]">-30 min</div>
+                <div className="text-xs text-[var(--color-neutral-text-tertiary)]">vs mes anterior</div>
               </div>
             </div>
           </CardContent>
@@ -252,24 +252,24 @@ export function ProfessionalStats() {
         <CardContent>
           <div className="space-y-4">
             {monthlyData.length > 0 ? (
-              monthlyData.slice(0, 6).map((month, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              monthlyData.slice(0, 6).map((month: any, index: number) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-[var(--color-neutral-surface)] rounded-lg">
                   <div>
                     <div className="font-medium text-sm">{month.month}</div>
-                    <div className="text-xs text-gray-500">{month.jobs} trabajos completados</div>
+                    <div className="text-xs text-[var(--color-neutral-text-tertiary)]">{month.jobs} trabajos completados</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-medium text-green-600">
+                    <div className="text-sm font-medium text-[var(--color-success)]">
                       {formatPrice(month.earnings)}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-[var(--color-neutral-text-tertiary)]">
                       {month.jobs > 0 ? `Promedio: ${formatPrice(month.earnings / month.jobs)}` : 'Sin trabajos'}
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-[var(--color-neutral-text-tertiary)]">
                 <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>No hay datos de actividad mensual disponibles</p>
                 <p className="text-sm">Los datos aparecerán después de completar trabajos</p>

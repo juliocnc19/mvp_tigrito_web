@@ -125,83 +125,76 @@ export default function WithdrawalsManagementPage() {
   };
 
   const handleApproveWithdrawal = async (withdrawal: Withdrawal) => {
-    if (confirm(`¿Estás seguro de que quieres aprobar el retiro de $${withdrawal.amount}?`)) {
-      try {
-        setError(null);
-        const response = await fetch(`/api/withdrawals/${withdrawal.id}/update`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            status: 'COMPLETED',
-            adminNotes: 'Aprobado por administrador',
-          }),
-        });
-        
-        if (response.ok) {
-          setSuccessMessage(`Retiro de $${withdrawal.amount} aprobado exitosamente`);
-          fetchWithdrawals(); // Refresh the list
-          setTimeout(() => setSuccessMessage(null), 3000);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.error?.message || 'Error al aprobar retiro');
-        }
-      } catch (err) {
-        setError('Error de conexión al aprobar retiro');
-        console.error('Error approving withdrawal:', err);
+    try {
+      setError(null);
+      const response = await fetch(`/api/withdrawals/${withdrawal.id}/update`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'COMPLETED',
+          adminNotes: 'Aprobado por administrador',
+        }),
+      });
+      
+      if (response.ok) {
+        setSuccessMessage(`Retiro de $${withdrawal.amount} aprobado exitosamente`);
+        fetchWithdrawals(); // Refresh the list
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error?.message || 'Error al aprobar retiro');
       }
+    } catch (err) {
+      setError('Error de conexión al aprobar retiro');
+      console.error('Error approving withdrawal:', err);
     }
   };
 
   const handleRejectWithdrawal = async (withdrawal: Withdrawal) => {
-    const reason = prompt('Motivo del rechazo:');
-    if (reason) {
-      try {
-        setError(null);
-        const response = await fetch(`/api/withdrawals/${withdrawal.id}/update`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            status: 'FAILED',
-            rejectionReason: reason,
-            adminNotes: `Rechazado: ${reason}`,
-          }),
-        });
-        
-        if (response.ok) {
-          setSuccessMessage(`Retiro de $${withdrawal.amount} rechazado exitosamente`);
-          fetchWithdrawals(); // Refresh the list
-          setTimeout(() => setSuccessMessage(null), 3000);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.error?.message || 'Error al rechazar retiro');
-        }
-      } catch (err) {
-        setError('Error de conexión al rechazar retiro');
-        console.error('Error rejecting withdrawal:', err);
+    try {
+      setError(null);
+      const response = await fetch(`/api/withdrawals/${withdrawal.id}/update`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'FAILED',
+          rejectionReason: 'Rechazado por administrador',
+          adminNotes: 'Rechazado por administrador',
+        }),
+      });
+      
+      if (response.ok) {
+        setSuccessMessage(`Retiro de $${withdrawal.amount} rechazado exitosamente`);
+        fetchWithdrawals(); // Refresh the list
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error?.message || 'Error al rechazar retiro');
       }
+    } catch (err) {
+      setError('Error de conexión al rechazar retiro');
+      console.error('Error rejecting withdrawal:', err);
     }
   };
 
   const handleDeleteWithdrawal = async (withdrawal: Withdrawal) => {
-    if (confirm(`¿Estás seguro de que quieres eliminar este retiro?`)) {
-      try {
-        setError(null);
-        const response = await fetch(`/api/withdrawals/${withdrawal.id}/delete`, {
-          method: 'DELETE',
-        });
-        
-        if (response.ok) {
-          setSuccessMessage(`Retiro eliminado exitosamente`);
-          fetchWithdrawals(); // Refresh the list
-          setTimeout(() => setSuccessMessage(null), 3000);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.error?.message || 'Error al eliminar retiro');
-        }
-      } catch (err) {
-        setError('Error de conexión al eliminar retiro');
-        console.error('Error deleting withdrawal:', err);
+    try {
+      setError(null);
+      const response = await fetch(`/api/withdrawals/${withdrawal.id}/delete`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        setSuccessMessage(`Retiro eliminado exitosamente`);
+        fetchWithdrawals(); // Refresh the list
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error?.message || 'Error al eliminar retiro');
       }
+    } catch (err) {
+      setError('Error de conexión al eliminar retiro');
+      console.error('Error deleting withdrawal:', err);
     }
   };
 

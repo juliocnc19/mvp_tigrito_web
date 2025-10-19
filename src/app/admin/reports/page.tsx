@@ -304,19 +304,13 @@ export default function ReportsManagementPage() {
       header: 'Motivo',
       sortable: true,
       render: (value) => (
-        <Badge variant="outline">
-          {getReasonLabel(value)}
-        </Badge>
-      ),
-    },
-    {
-      key: 'reason',
-      header: 'Motivo',
-      render: (value) => (
         <div className="max-w-xs">
-          <span className="text-sm text-gray-600">
+          <Badge variant="outline" className="mb-1">
+            {getReasonLabel(value)}
+          </Badge>
+          <div className="text-sm text-gray-600">
             {value}
-          </span>
+          </div>
         </div>
       ),
     },

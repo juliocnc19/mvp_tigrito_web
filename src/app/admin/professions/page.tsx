@@ -279,15 +279,15 @@ export default function ProfessionsManagementPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 <Briefcase className="h-8 w-8 mr-3" />
-                Gestión de Profesiones
+                Gestión de Categorías
               </h1>
               <p className="text-gray-600 mt-2">
-                Administra las profesiones disponibles en el sistema
+                Administra las categorías de servicios disponibles en el sistema
               </p>
             </div>
             <Button onClick={handleCreateProfession}>
               <Plus className="h-4 w-4 mr-2" />
-              Nueva Profesión
+              Nueva Categoría
             </Button>
           </div>
         </div>
@@ -310,13 +310,13 @@ export default function ProfessionsManagementPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Profesiones</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Categorías</CardTitle>
               <Briefcase className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{professions.length}</div>
               <p className="text-xs text-muted-foreground">
-                Profesiones registradas
+                Categorías registradas
               </p>
             </CardContent>
           </Card>
@@ -406,14 +406,14 @@ export default function ProfessionsManagementPage() {
               deleteDescription={`¿Estás seguro de que quieres eliminar la profesión ${profession.name}? Esta acción no se puede deshacer.`}
             />
           )}
-          emptyMessage="No se encontraron profesiones"
+          emptyMessage="No se encontraron categorías"
         />
 
         {/* Create Profession Modal */}
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Nueva Profesión</DialogTitle>
+              <DialogTitle>Nueva Categoría</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
@@ -425,7 +425,7 @@ export default function ProfessionsManagementPage() {
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   className="col-span-3"
-                  placeholder="Ej: Plomería"
+                  placeholder="Ej: Plomería, Electricidad, Carpintería"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -437,7 +437,7 @@ export default function ProfessionsManagementPage() {
                   value={formData.slug}
                   onChange={(e) => handleInputChange('slug', e.target.value)}
                   className="col-span-3"
-                  placeholder="plomeria"
+                  placeholder="plomeria, electricidad, carpinteria"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -449,7 +449,7 @@ export default function ProfessionsManagementPage() {
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   className="col-span-3"
-                  placeholder="Descripción de la profesión..."
+                  placeholder="Descripción de la categoría..."
                   rows={3}
                 />
               </div>
@@ -471,7 +471,7 @@ export default function ProfessionsManagementPage() {
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Editar Profesión</DialogTitle>
+              <DialogTitle>Editar Categoría</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
@@ -483,7 +483,7 @@ export default function ProfessionsManagementPage() {
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   className="col-span-3"
-                  placeholder="Ej: Plomería"
+                  placeholder="Ej: Plomería, Electricidad, Carpintería"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -495,7 +495,7 @@ export default function ProfessionsManagementPage() {
                   value={formData.slug}
                   onChange={(e) => handleInputChange('slug', e.target.value)}
                   className="col-span-3"
-                  placeholder="plomeria"
+                  placeholder="plomeria, electricidad, carpinteria"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -507,7 +507,7 @@ export default function ProfessionsManagementPage() {
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   className="col-span-3"
-                  placeholder="Descripción de la profesión..."
+                  placeholder="Descripción de la categoría..."
                   rows={3}
                 />
               </div>

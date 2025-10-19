@@ -7,24 +7,15 @@ import {
   Users,
   Settings,
   BarChart3,
-  Shield,
   CreditCard,
   FileText,
   Gift,
-  MessageSquare,
-  Image,
-  ClipboardList,
-  Bell,
-  MessageCircle,
   TrendingUp,
   UserCheck,
   Briefcase,
   ShoppingCart,
-  Star,
   Flag,
   DollarSign,
-  Database,
-  Activity,
 } from 'lucide-react';
 
 const navigationItems = [
@@ -39,7 +30,7 @@ const navigationItems = [
     icon: Users,
   },
   {
-    title: 'Profesiones',
+    title: 'Categorías',
     href: '/admin/professions',
     icon: Briefcase,
   },
@@ -69,11 +60,6 @@ const navigationItems = [
     icon: CreditCard,
   },
   {
-    title: 'Reseñas',
-    href: '/admin/reviews',
-    icon: Star,
-  },
-  {
     title: 'Reportes',
     href: '/admin/reports',
     icon: Flag,
@@ -87,26 +73,6 @@ const navigationItems = [
     title: 'Códigos Promo',
     href: '/admin/promo-codes',
     icon: Gift,
-  },
-  {
-    title: 'Multimedia',
-    href: '/admin/media',
-    icon: Image,
-  },
-  {
-    title: 'Logs de Auditoría',
-    href: '/admin/audit-logs',
-    icon: Database,
-  },
-  {
-    title: 'Notificaciones',
-    href: '/admin/notifications',
-    icon: Bell,
-  },
-  {
-    title: 'Conversaciones',
-    href: '/admin/conversations',
-    icon: MessageCircle,
   },
 ];
 

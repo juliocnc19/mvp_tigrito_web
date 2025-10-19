@@ -16,10 +16,6 @@ import {
   ShoppingCart,
   Flag,
   DollarSign,
-  Database,
-  Bell,
-  MessageCircle,
-  Image,
 } from 'lucide-react';
 
 const navigationItems = [
@@ -77,26 +73,6 @@ const navigationItems = [
     title: 'Códigos Promo',
     href: '/admin/promo-codes',
     icon: Gift,
-  },
-  {
-    title: 'Multimedia',
-    href: '/admin/media',
-    icon: Image,
-  },
-  {
-    title: 'Logs de Auditoría',
-    href: '/admin/audit-logs',
-    icon: Database,
-  },
-  {
-    title: 'Notificaciones',
-    href: '/admin/notifications',
-    icon: Bell,
-  },
-  {
-    title: 'Conversaciones',
-    href: '/admin/conversations',
-    icon: MessageCircle,
   },
 ];
 

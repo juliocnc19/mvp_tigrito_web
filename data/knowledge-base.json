@@ -1,0 +1,58 @@
+{
+  "categories": [
+    {
+      "name": "General",
+      "topics": [
+        {
+          "question": "¿Cómo funciona el servicio?",
+          "answer": "Nuestro servicio conecta clientes con profesionales calificados para diversos trabajos y servicios.",
+          "keywords": [
+            "servicio",
+            "funcionamiento",
+            "cómo funciona"
+          ]
+        },
+        {
+          "question": "¿Cuáles son los horarios de atención?",
+          "answer": "Estamos disponibles 24/7 a través de nuestra plataforma online.",
+          "keywords": [
+            "horarios",
+            "atención",
+            "disponibilidad"
+          ]
+        },
+        {
+          "question": "cuanto cobran de comisiones?",
+          "answer": "10%",
+          "keywords": []
+        }
+      ]
+    },
+    {
+      "name": "Pagos",
+      "topics": [
+        {
+          "question": "¿Cómo puedo pagar?",
+          "answer": "Aceptamos pagos con tarjeta de crédito, débito y transferencias bancarias.",
+          "keywords": [
+            "pago",
+            "tarjeta",
+            "transferencia"
+          ]
+        },
+        {
+          "question": "¿Es seguro el pago?",
+          "answer": "Sí, utilizamos encriptación de grado bancario para proteger tus datos de pago.",
+          "keywords": [
+            "seguro",
+            "seguridad",
+            "encriptación"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "comisiones",
+      "topics": []
+    }
+  ]
